@@ -1,0 +1,21 @@
+{% extends 'Curriculator/base.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block title %}Profilo{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="jumbotron">
+            <br>
+            <h1>Dati anagrafici</h1>
+            <form method="post">{% csrf_token %}
+                {% crispy profile_form %}
+            </form>
+
+            {% if foto_obj %}
+                <h3>Caricamento completato: {{ foto_obj.title }}</h3>
+                <img src="{{ foto_obj.image.url }}" alt="connesso">
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
