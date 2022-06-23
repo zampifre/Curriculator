@@ -1,0 +1,13 @@
+{% extends 'Curriculator/base.html' %}
+{% load crispy_forms_filters %}
+{% block title %} Cancella Curriculum {% endblock %}
+{% block content %}
+    <div class="container">
+    <br>
+        <form method="post">{% csrf_token %}
+        <p>Sei sicuro di voler cancellare il curriculum?</p>
+        {{ form|crispy }}
+        <input type="submit" value="Conferma">
+    </form>
+    </div>
+{% endblock %}

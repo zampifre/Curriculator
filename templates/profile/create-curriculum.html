@@ -1,0 +1,13 @@
+{% extends 'Curriculator/base.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block title %} Nuovo Curriculum {% endblock %}
+{% block content %}
+    <div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" name="CreateCurriculum">
+        </form>
+    </div>
+{% endblock %}
