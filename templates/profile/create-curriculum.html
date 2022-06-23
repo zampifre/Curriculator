@@ -6,8 +6,9 @@
     <div class="container">
     <form method="post">
         {% csrf_token %}
+        <p>Verrà creato un nuovo CV vuoto in data odierna.</p>
         {{ form|crispy }}
-        <input type="submit" name="CreateCurriculum">
+        <input type="submit" value="Conferma" name="CreateCurriculum">
         </form>
     </div>
 {% endblock %}

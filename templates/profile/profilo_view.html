@@ -18,7 +18,7 @@
             <p class="fs-5">Email: {{ user.email }}</p>
             <p class="fs-5">Telefono: {{ object.telefono }}</p>
         </div>
-        <a class="btn btn-primary" href="{% url 'CurriculatorApp:crea-curriculum'%}">Nuovo Curriculum</a>
+        <a class="btn btn-primary" onclick="location.href='{% url 'CurriculatorApp:crea-curriculum'%}'">Nuovo Curriculum</a>
         <div class="container">
             <h2>I tuoi curriculum: </h2>
             {% for item in curriculum %}
@@ -46,4 +46,5 @@
             {% endfor %}
         </div>
     </div>
+
 {% endblock %}

@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.deletion import Collector
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, TemplateView
 from .forms import *
@@ -68,13 +68,27 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
 
 class CurriclumCreate(CreateView):
     model = Curriculum
-    fields = ['profilo', 'data_creazione', 'data_modifica']
+    fields = []
     template_name = 'profile/create-curriculum.html'
+
+    def get_initial(self):
+        initial = super(CurriclumCreate, self).get_initial()
+        initial = initial.copy()
+        profile = get_object_or_404(Profile, user=self.request.user)
+        date_creation = datetime.date.today()
+        date_modifica = datetime.date.today()
+        initial['profilo'] = profile
+        initial['data_creazione'] = date_creation
+        initial['data_modifica'] = date_modifica
+        return initial
+
+    def form_valid(self, form):
+        form.instance.profilo = self.request.user.profile
+        return super(CurriclumCreate, self).form_valid(form)
 
     def get_success_url(self):
         profile_id = self.request.user.pk
         return reverse_lazy('CurriculatorApp:profilo', kwargs={'pk': profile_id})
-
 
 
 class CurriculumDelete(DeleteView):
