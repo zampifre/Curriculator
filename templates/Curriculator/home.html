@@ -2,14 +2,15 @@
 {% block title %}Homepage{% endblock %}
 
 {% block content %}
+    {% block navabar %} {% endblock %}
     <div class="container">
     <div class="jumbotron">
         <h1>Homepage</h1>
         {% if user.is_authenticated %}
-            <p>Hello {{ user.username }}</p>
+            <p>Benvenuto {{ user.username }}!</p>
             <a href="{% url 'CurriculatorApp:profilo' pk=user.pk %}"> Profilo </a>
             <br>
-            <a href="{% url 'CurriculatorApp:aggiorna-profilo' %}">Aggiorna Profilo (old) </a>
+            <a href="{% url 'CurriculatorApp:aggiorna-profilo' %}">Aggiorna Profilo </a>
             <br>
             <a href="{% url 'logout' %}">Logout</a><br>
         {% else %}

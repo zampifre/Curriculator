@@ -1,11 +1,16 @@
+import datetime
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models.deletion import Collector
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, TemplateView
 from .forms import *
 from django.contrib import messages
+from django.views.generic.edit import CreateView, DeleteView
 from django.contrib.auth import authenticate, login
 from .models import *
+
 
 def register(request):
     if request.method == 'POST':
@@ -23,6 +28,7 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'registration/registration.html', {'user_form': form})
+
 
 class Profilo(DetailView):
     template_name = 'profile/profilo_view.html'
@@ -58,3 +64,24 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
+
+
+class CurriclumCreate(CreateView):
+    model = Curriculum
+    fields = ['profilo', 'data_creazione', 'data_modifica']
+    template_name = 'profile/create-curriculum.html'
+
+    def get_success_url(self):
+        profile_id = self.request.user.pk
+        return reverse_lazy('CurriculatorApp:profilo', kwargs={'pk': profile_id})
+
+
+
+class CurriculumDelete(DeleteView):
+    model = Curriculum
+    template_name = 'profile/delete-curriculum.html'
+
+    def get_success_url(self):
+        profile_id = self.request.user.pk
+        return reverse_lazy('CurriculatorApp:profilo', kwargs={'pk': profile_id})
+

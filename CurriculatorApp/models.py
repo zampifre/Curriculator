@@ -5,7 +5,6 @@ from django.db.models.signals import post_save
 from django_yaml_field.fields import YAMLField
 from django.dispatch import receiver
 
-#Dentro a User di django ci sono già nome utente, nome, cognome e e-mail
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     data_nascita = models.DateField(null=True)
@@ -29,11 +28,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
-
-#Ho impostato entrambe le date senza obbligo di inserimento in modo tale che:
-#   - solo data inizio --> evento in corso
-#   - solo fine --> evento concluso
-#   - inizio e fine --> evento concluso
 class Elemento(models.Model):
     titolo = models.CharField(max_length=200, null=False)
     data_inizio = models.DateField(null=True, default=None)
@@ -60,10 +54,11 @@ class Curriculum(models.Model):
     profilo = models.ForeignKey(Profile, on_delete=models.CASCADE)
     data_creazione = models.DateField(default=datetime.date.today)
     data_modifica = models.DateField(default=datetime.date.today)
-    sezione = models.ManyToManyField(Sezione, default=None, null=True, blank=True)
+    sezioni = models.ManyToManyField(Sezione, default=None, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Curriculum"
 
     def __str__(self):
         return f'{self.profilo}, {self.data_creazione}, {self.data_modifica}'
+

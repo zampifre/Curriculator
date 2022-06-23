@@ -18,6 +18,7 @@
             <p class="fs-5">Email: {{ user.email }}</p>
             <p class="fs-5">Telefono: {{ object.telefono }}</p>
         </div>
+        <a class="btn btn-primary" href="{% url 'CurriculatorApp:crea-curriculum'%}">Nuovo Curriculum</a>
         <div class="container">
             <h2>I tuoi curriculum: </h2>
             {% for item in curriculum %}
@@ -35,6 +36,9 @@
                         <th scope="row">{{ item.id }}</th>
                         <td>{{ item.data_creazione }}</td>
                         <td>{{ item.data_modifica }}</td>
+                        <td> <a class="btn btn-danger" href="{% url 'CurriculatorApp:cancella-curriculum' pk=item.pk %}">
+                            Cancella</a>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

@@ -8,8 +8,8 @@ from crispy_forms.layout import Submit, Column, Fieldset, Layout, Row, HTML
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
+        exclude = ['username']
         fields = [
-            'username',
             'first_name',
             'last_name',
             'email'
