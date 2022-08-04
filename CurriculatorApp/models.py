@@ -2,7 +2,7 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django_yaml_field.fields import YAMLField
+from yamlfield.fields import YAMLField
 from django.dispatch import receiver
 
 class Profile(models.Model):
@@ -28,33 +28,11 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
-class Elemento(models.Model):
-    titolo = models.CharField(max_length=200, null=False)
-    data_inizio = models.DateField(null=True, default=None)
-    data_fine = models.DateField(null=True, default=None)
-    campi = YAMLField()
-
-    class Meta:
-        verbose_name_plural = "Elementi"
-
-    def __str__(self):
-        return self.titolo
-
-class Sezione(models.Model):
-    titolo = models.CharField(max_length=100, null=False)
-    elementi = models.ManyToManyField(Elemento, default=None, null=True, blank=True)
-
-    class Meta:
-        verbose_name_plural = "Sezioni"
-
-    def __str__(self):
-        return self.titolo
 
 class Curriculum(models.Model):
     profilo = models.ForeignKey(Profile, on_delete=models.CASCADE)
     data_creazione = models.DateField(default=datetime.date.today)
     data_modifica = models.DateField(default=datetime.date.today)
-    sezioni = models.ManyToManyField(Sezione, default=None, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Curriculum"
@@ -62,3 +40,25 @@ class Curriculum(models.Model):
     def __str__(self):
         return f'{self.profilo}, {self.data_creazione}, {self.data_modifica}'
 
+class Sezione(models.Model):
+    titolo = models.CharField(max_length=100, null=False)
+    curriculum = models.ForeignKey(Curriculum, default=None, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Sezioni"
+
+    def __str__(self):
+        return self.titolo
+
+class Elemento(models.Model):
+    titolo = models.CharField(max_length=200, null=False)
+    data_inizio = models.DateField(null=True, default=None)
+    data_fine = models.DateField(null=True, default=None)
+    campi = YAMLField()
+    sezione = models.ForeignKey(Sezione, default=None, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Elementi"
+
+    def __str__(self):
+        return self.titolo

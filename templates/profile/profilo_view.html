@@ -2,46 +2,51 @@
 {% block title %} Profilo {% endblock %}
 {% block content %}
     <div class="container">
-        <h2> Dati anagrafici:</h2>
-        <div style="border-bottom-left-radius: 1px">
-        <img class="img-thumbnail" src="{{ object.foto.url }}" alt="" style="float:left; margin: 1px"
-        height="150" width="150">
-            <p class="fs-1" style="margin: 3px"> {{ user.first_name }} {{ user.last_name }}</p>
+        <!--<h2> Dati anagrafici:</h2>-->
+        <div class="card" style="width: 12rem;">
+            <img src="{{ object.foto.url }}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <p class="card-text"> <strong>{{ user.first_name}} {{ user.last_name }}</strong></p>
+            </div>
         </div>
         <br>
-        <br>
-        <br>
-        <br>
-        <div class="container">
-            <p class="fs-5">Data di nascita: {{ object.data_nascita }}</p>
-            <p class="fs-5">Luogo di nascita: {{ object.luogo_nascita }}</p>
-            <p class="fs-5">Email: {{ user.email }}</p>
-            <p class="fs-5">Telefono: {{ object.telefono }}</p>
+        <div class="">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Data di nascita: {{ object.data_nascita }}</li>
+            <li class="list-group-item">Luogo di nascita: {{ object.luogo_nascita }}</li>
+            <li class="list-group-item">Email: {{ user.email }}</li>
+            <li class="list-group-item">Telefono: {{ object.telefono }}</li>
+        </ul>
         </div>
-        <a class="btn btn-primary" onclick="location.href='{% url 'CurriculatorApp:crea-curriculum'%}'">Nuovo Curriculum</a>
+        <br>
+        <a class="btn btn-primary btn-sm" onclick="location.href='{% url 'CurriculatorApp:crea-curriculum'%}'">Nuovo Curriculum</a>
         <div class="container">
-            <h2>I tuoi curriculum: </h2>
+        <br>
+        <h4> I tuoi curriculum: </h4>
             {% for item in curriculum %}
                 {% if item.profilo.id == object.id %}
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Data Creazione</th>
-                        <th scope="col">Data Modifica</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <th scope="row">{{ item.id }}</th>
-                        <td>{{ item.data_creazione }}</td>
-                        <td>{{ item.data_modifica }}</td>
-                        <td> <a class="btn btn-danger" href="{% url 'CurriculatorApp:cancella-curriculum' pk=item.pk %}">
-                            Cancella</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col" >Data Creazione</th>
+                            <th scope="col">Data Modifica</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">{{ item.id }}</th>
+                            <td>{{ item.data_creazione }}</td>
+                            <td>{{ item.data_modifica }}</td>
+                            <td>
+                                <a class="btn btn-success btn-sm" href="{% url 'CurriculatorApp:dettagli-curriculum' pk=item.pk%}">
+                                    Visualizza </a>
+                                <a class="btn btn-danger btn-sm" href="{% url 'CurriculatorApp:cancella-curriculum' pk=item.pk %}">
+                                Cancella</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 {% endif %}
             {% endfor %}
         </div>

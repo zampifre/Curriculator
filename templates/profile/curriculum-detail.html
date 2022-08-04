@@ -1,0 +1,20 @@
+{% extends 'Curriculator/base.html' %}
+{% block title %} Curriculum {{ object.id }} {% endblock %}
+{% block content %}
+    <div class="container">
+    <h1>Il tuo cv</h1>
+    {% for item in sezioni %}
+        {% if item.curriculum.id == object.id %}
+            {{ item.titolo }} <br>
+            {% for element in elementi %}
+                {% if element.id == item.id %}
+                    <p>
+                    {{ element.titolo }} <br>
+                    {{ element.campi }}
+                    </p>
+                {% endif %}
+            {% endfor %}
+         {% endif %}
+    {% endfor %}
+    </div>
+{% endblock %}

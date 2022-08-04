@@ -99,3 +99,15 @@ class CurriculumDelete(DeleteView):
         profile_id = self.request.user.pk
         return reverse_lazy('CurriculatorApp:profilo', kwargs={'pk': profile_id})
 
+
+class CurriculumDetail(DetailView):
+    model = Curriculum
+    template_name = 'profile/curriculum-detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CurriculumDetail, self).get_context_data(**kwargs)
+        context['curriculum'] = Curriculum.objects.all()
+        context['sezioni'] = Sezione.objects.all()
+        context['elementi'] = Elemento.objects.all()
+        return context
+
