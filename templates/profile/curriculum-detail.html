@@ -1,20 +1,77 @@
 {% extends 'Curriculator/base.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+    <style>
+        .hidden{
+            display: none;
+        }
+    </style>
+
 {% block title %} Curriculum {{ object.id }} {% endblock %}
 {% block content %}
     <div class="container">
-    <h1>Il tuo cv</h1>
-    {% for item in sezioni %}
-        {% if item.curriculum.id == object.id %}
-            {{ item.titolo }} <br>
-            {% for element in elementi %}
-                {% if element.id == item.id %}
-                    <p>
-                    {{ element.titolo }} <br>
-                    {{ element.campi }}
-                    </p>
-                {% endif %}
+        <h1>{{ object.profilo.user.first_name }} {{ object.profilo.user.last_name }}</h1> <br>
+        <div class="card" style="width: 12rem;">
+            <img src="{{ object.profilo.foto.url }}" class="card-img-top" alt="...">
+        </div>
+        <p>
+            <strong>Data di nascita:</strong> {{ object.profilo.data_nascita }}<br>
+            <strong>Luogo di nascita: </strong> {{ object.profilo.luogo_nascita }} <br>
+            <strong>Email: </strong> {{ object.profilo.user.email }}<br>
+        </p>
+        </div>
+
+        <div class="container" id="survey_option">
+            {% for item in sezioni %}
+                <h4><strong><u>{{ item.titolo }}</u></strong></h4><br>
+                    {% for element in elementi %}
+                        {% if element.id == item.id %}
+                            <ul>
+                                <li>{{ element.titolo }}</li>
+                                <ul>
+                                    {{ element.campi }}
+                                </ul>
+                            </ul>
+                        {% endif %}{% endfor %}
             {% endfor %}
-         {% endif %}
-    {% endfor %}
+        </div>
+
+        <div class="container">
+            <form id="form-container" method="post">
+                {% csrf_token %}
+                {{formset.management_form}}
+                {% for form in formset %}
+                <div class="sezione-form">
+                {{form | crispy}}
+                </div>
+                {% endfor %}
+                <button id="aggiungi-form" type="button" class="btn btn-primary">Nuova sezione</button>
+                <button type="submit" class="btn btn-success">Crea Sezione</button>
+            </form>
     </div>
+
+    <script>
+        let sezioneform = document.querySelectorAll(".sezione-form")
+        let container = document.querySelector("#form-container")
+        let addButton = document.querySelector("#aggiungi-form")
+        let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+        let formNum = sezioneform.length-1
+        addButton.addEventListener('click', addForm)
+
+        function addForm(e){
+            e.preventDefault()
+
+            let newForm = sezioneform[0].cloneNode(true)
+            let formRegex = RegExp(`form-(\\d){1}-`, 'g')
+
+            formNum++
+            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
+            container.insertBefore(newForm, addButton)
+            totalForms.setAttribute('value', `${formNum+1}`)
+
+        }
+    </script>
+
+
 {% endblock %}

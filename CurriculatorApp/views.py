@@ -106,8 +106,27 @@ class CurriculumDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CurriculumDetail, self).get_context_data(**kwargs)
-        context['curriculum'] = Curriculum.objects.all()
-        context['sezioni'] = Sezione.objects.all()
+        print(kwargs['object'])
+        context['formset'] = SezioneFormSet(
+            initial=[
+                {
+                    'curriculum': kwargs['object'].id,
+                    'titolo': ''
+                }
+            ],
+            queryset=Sezione.objects.none(),
+        )
+        context['curriculum'] = kwargs['object']
+        context['sezioni'] = Sezione.objects.filter(curriculum=kwargs['object'].id)
         context['elementi'] = Elemento.objects.all()
         return context
+
+    def post(self, *args, **kwargs):
+        formset = SezioneFormSet(data=self.request.POST, initial=[{'curriculum': kwargs['pk']}])
+        if formset.is_valid():
+            formset.save()
+            return redirect(self.request.META.get('HTTP_REFERER'))
+        else:
+            print(formset.errors)
+        return self.render_to_response({'sezione_formset': formset})
 

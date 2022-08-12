@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.forms import modelformset_factory
+
 from .models import *
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Column, Fieldset, Layout, Row, HTML
@@ -15,6 +17,7 @@ class UserForm(forms.ModelForm):
             'email'
         ]
 
+
 class ProfiloForm(forms.ModelForm):
     class Meta:
         model = Profile
@@ -25,6 +28,7 @@ class ProfiloForm(forms.ModelForm):
             'foto',
             'telefono',
         ]
+
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(max_length=254)
@@ -38,4 +42,23 @@ class UserRegisterForm(UserCreationForm):
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(Submit('submit', 'Registrati'))
+
+
+class SezioneForm(forms.ModelForm):
+    class Meta:
+        model = Sezione
+        fields = ['titolo', 'curriculum']
+
+    def __init__(self, *args, **kwargs):
+        curriculum_default = kwargs.pop('curriculum', None)
+        super(SezioneForm, self).__init__(*args, **kwargs)
+        self.fields['curriculum'].disabled = True
+
+
+SezioneFormSet = modelformset_factory(Sezione, form=SezioneForm, extra=1, fields=['titolo', 'curriculum'])
+
+#SezioneFormSet = modelformset_factory(
+#    Sezione, fields=("titolo", "curriculum"), extra=1
+#)
+
 
