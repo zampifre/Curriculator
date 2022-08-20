@@ -4,7 +4,7 @@ from django.forms import modelformset_factory
 
 from .models import *
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Column, Fieldset, Layout, Row, HTML
+from crispy_forms.layout import Submit, Column, Fieldset, Layout, Row, HTML, Field
 
 
 class UserForm(forms.ModelForm):
@@ -52,6 +52,7 @@ class SezioneForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         curriculum_default = kwargs.pop('curriculum', None)
         super(SezioneForm, self).__init__(*args, **kwargs)
+        self.fields['curriculum'].widget = forms.HiddenInput()
         self.fields['curriculum'].disabled = True
 
 

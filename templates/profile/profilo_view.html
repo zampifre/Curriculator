@@ -24,6 +24,7 @@
         <div class="container">
         <br>
         <h4> I tuoi curriculum: </h4>
+        <!--filtrare la selezione di cv-->
             {% for item in curriculum %}
                 {% if item.profilo.id == object.id %}
                     <table class="table">

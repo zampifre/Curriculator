@@ -1,10 +1,15 @@
 import datetime
+import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.deletion import Collector
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import DetailView, TemplateView
+from django.views.generic.detail import SingleObjectMixin
+
 from .forms import *
 from django.contrib import messages
 from django.views.generic.edit import CreateView, DeleteView
@@ -99,14 +104,12 @@ class CurriculumDelete(DeleteView):
         profile_id = self.request.user.pk
         return reverse_lazy('CurriculatorApp:profilo', kwargs={'pk': profile_id})
 
-
 class CurriculumDetail(DetailView):
     model = Curriculum
     template_name = 'profile/curriculum-detail.html'
 
     def get_context_data(self, **kwargs):
         context = super(CurriculumDetail, self).get_context_data(**kwargs)
-        print(kwargs['object'])
         context['formset'] = SezioneFormSet(
             initial=[
                 {
@@ -130,3 +133,11 @@ class CurriculumDetail(DetailView):
             print(formset.errors)
         return self.render_to_response({'sezione_formset': formset})
 
+
+def delete_sezione(request, pk):
+    sezione = Sezione.objects.get(id=pk)
+    sezione.delete()
+    messages.error(request, 'Sezione eliminata con successo!')
+    #refresh della pagina corrente
+    return redirect(request.META['HTTP_REFERER'])
+    #return redirect('CurriculatorApp:dettagli-curriculum', kwargs={'pk': sezione.curriculum.pk})

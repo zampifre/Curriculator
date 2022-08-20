@@ -10,5 +10,6 @@ urlpatterns = [
     path('create-curriculum/', views.CurriclumCreate.as_view(), name='crea-curriculum'),
     path('<int:pk>/delete-curriculum/', CurriculumDelete.as_view(), name='cancella-curriculum'),
     path('<int:pk>/detail-curriculum/', CurriculumDetail.as_view(), name='dettagli-curriculum'),
+    path('delete/<int:pk>', views.delete_sezione, name='delete-sezione'),
 
 ]

@@ -2,6 +2,7 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.urls import reverse
 from yamlfield.fields import YAMLField
 from django.dispatch import receiver
 
@@ -43,6 +44,9 @@ class Curriculum(models.Model):
 class Sezione(models.Model):
     titolo = models.CharField(max_length=100, null=False)
     curriculum = models.ForeignKey(Curriculum, default=None, on_delete=models.CASCADE)
+
+    def delete_url(self):
+        return reverse('delete-sezione', kwargs={'pk': self.id})
 
     class Meta:
         verbose_name_plural = "Sezioni"
