@@ -8,8 +8,8 @@ urlpatterns = [
     path('<int:pk>/profile/', Profilo.as_view(), name='profilo'),
     path('update-profile/', ProfileUpdateView.as_view(), name='aggiorna-profilo'),
     path('create-curriculum/', views.CurriclumCreate.as_view(), name='crea-curriculum'),
-    path('<int:pk>/delete-curriculum/', CurriculumDelete.as_view(), name='cancella-curriculum'),
+    path('delete-curriculum/<int:pk>', views.curriculum_delete, name='delete-curriculum'),
     path('<int:pk>/detail-curriculum/', CurriculumDetail.as_view(), name='dettagli-curriculum'),
-    path('delete/<int:pk>', views.delete_sezione, name='delete-sezione'),
-
+    path('delete-sezione/<int:pk>', views.delete_sezione, name='delete-sezione'),
+    path('delete-elemento/<int:pk>', views.delete_elemento, name='delete-elemento'),
 ]

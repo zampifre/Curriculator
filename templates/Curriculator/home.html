@@ -8,14 +8,12 @@
         <h1>Homepage</h1>
         {% if user.is_authenticated %}
             <p>Benvenuto {{ user.username }}!</p>
-            <a href="{% url 'CurriculatorApp:profilo' pk=user.pk %}"> Profilo </a>
-            <br>
-            <a href="{% url 'CurriculatorApp:aggiorna-profilo' %}">Aggiorna Profilo </a>
-            <br>
-            <a href="{% url 'logout' %}">Logout</a><br>
+            <p><a class="btn btn-outline-secondary" href="{% url 'CurriculatorApp:profilo' pk=user.pk %}"> Profilo </a></p>
+            <p><a class="btn btn-outline-secondary" href="{% url 'CurriculatorApp:aggiorna-profilo' %}">Aggiorna Profilo </a></p>
+            <p><a class="btn btn-outline-secondary" href="{% url 'logout' %}">Logout</a><br></p>
         {% else %}
-            <a href="{% url 'CurriculatorApp:user-register' %}">Register</a><br>
-            <a href="{% url 'login' %}">Login</a><br>
+            <p><a class="btn btn-outline-secondary" href="{% url 'CurriculatorApp:user-register' %}">Register</a><br></p>
+            <p><a class="btn btn-outline-secondary" href="{% url 'login' %}">Login</a><br></p>
             </div>
             </div>
     {% endif %}

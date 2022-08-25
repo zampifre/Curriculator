@@ -3,7 +3,7 @@ import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.deletion import Collector
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views import View
@@ -41,7 +41,7 @@ class Profilo(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(Profilo, self).get_context_data(**kwargs)
-        context['curriculum'] = Curriculum.objects.all()
+        context['curriculum'] = Curriculum.objects.filter(profilo=kwargs['object'].id)
         return context
 
 
@@ -95,14 +95,11 @@ class CurriclumCreate(CreateView):
         profile_id = self.request.user.pk
         return reverse_lazy('CurriculatorApp:profilo', kwargs={'pk': profile_id})
 
-
-class CurriculumDelete(DeleteView):
-    model = Curriculum
-    template_name = 'profile/delete-curriculum.html'
-
-    def get_success_url(self):
-        profile_id = self.request.user.pk
-        return reverse_lazy('CurriculatorApp:profilo', kwargs={'pk': profile_id})
+def curriculum_delete(request,pk):
+    curriculum = Curriculum.objects.get(id=pk)
+    curriculum.delete()
+    messages.error(request, 'Sezione eliminata con successo!')
+    return redirect(request.META['HTTP_REFERER'])
 
 class CurriculumDetail(DetailView):
     model = Curriculum
@@ -119,23 +116,51 @@ class CurriculumDetail(DetailView):
             ],
             queryset=Sezione.objects.none(),
         )
+        context['formset_element'] = ElementoFormSet(
+            form_kwargs={'sezione': Sezione.objects.filter(curriculum=kwargs['object'].id)},
+            queryset=Elemento.objects.none(),
+        )
         context['curriculum'] = kwargs['object']
         context['sezioni'] = Sezione.objects.filter(curriculum=kwargs['object'].id)
-        context['elementi'] = Elemento.objects.all()
+        context['elementi'] = Elemento.objects.filter(sezione__in=context['sezioni'])
         return context
 
     def post(self, *args, **kwargs):
         formset = SezioneFormSet(data=self.request.POST, initial=[{'curriculum': kwargs['pk']}])
-        if formset.is_valid():
-            formset.save()
-            return redirect(self.request.META.get('HTTP_REFERER'))
+        if self.request.method == 'POST' and 'crea-sezione' in self.request.POST:
+            if formset.is_valid():
+                formset.save()
+                cv = Curriculum.objects.get(id=kwargs['pk'])
+                cv.data_modifica = datetime.date.today()
+                cv.save()
+                return redirect(self.request.META.get('HTTP_REFERER'))
         else:
-            print(formset.errors)
-        return self.render_to_response({'sezione_formset': formset})
+            formset.clean()
+            formset = ElementoFormSet(data=self.request.POST, form_kwargs={'sezione': Sezione.objects.filter(curriculum=kwargs['pk'])})
+            if formset.is_valid():
+                formset.save()
+                cv = Curriculum.objects.get(id=kwargs['pk'])
+                cv.data_modifica = datetime.date.today()
+                cv.save()
+                return redirect(self.request.META.get('HTTP_REFERER'))
 
+        return self.render_to_response({'formset': formset})
+
+
+def delete_elemento(request, pk):
+    elemento = Elemento.objects.get(id=pk)
+    cv = Curriculum.objects.get(id=elemento.sezione.curriculum.id)
+    cv.data_modifica = datetime.date.today()
+    cv.save()
+    elemento.delete()
+    messages.error(request, 'Elemento eliminato con successo!')
+    return redirect(request.META['HTTP_REFERER'])
 
 def delete_sezione(request, pk):
     sezione = Sezione.objects.get(id=pk)
+    cv = Curriculum.objects.get(id=sezione.curriculum.id)
+    cv.data_modifica = datetime.date.today()
+    cv.save()
     sezione.delete()
     messages.error(request, 'Sezione eliminata con successo!')
     #refresh della pagina corrente

@@ -25,32 +25,32 @@
         <br>
         <h4> I tuoi curriculum: </h4>
         <!--filtrare la selezione di cv-->
-            {% for item in curriculum %}
-                {% if item.profilo.id == object.id %}
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col" >Data Creazione</th>
-                            <th scope="col">Data Modifica</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">{{ item.id }}</th>
-                            <td>{{ item.data_creazione }}</td>
-                            <td>{{ item.data_modifica }}</td>
-                            <td>
-                                <a class="btn btn-success btn-sm" href="{% url 'CurriculatorApp:dettagli-curriculum' pk=item.pk%}">
-                                    Visualizza </a>
-                                <a class="btn btn-danger btn-sm" href="{% url 'CurriculatorApp:cancella-curriculum' pk=item.pk %}">
-                                Cancella</a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                {% endif %}
-            {% endfor %}
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col" >Data Creazione</th>
+                    <th scope="col">Data Modifica</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in curriculum %}
+                    <tr class="table-light">
+                        <th scope="row"></th>
+                        <td>{{ item.data_creazione }}</td>
+                        <td>{{ item.data_modifica }}</td>
+                        <td>
+                            <a class="btn btn-success btn-sm" href="{% url 'CurriculatorApp:dettagli-curriculum' pk=item.pk%}">
+                                Visualizza
+                            </a>
+                            <a class="btn btn-danger btn-sm" href="{% url 'CurriculatorApp:delete-curriculum' pk=item.pk %}">
+                                Cancella
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 

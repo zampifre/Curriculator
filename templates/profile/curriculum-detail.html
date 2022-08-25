@@ -8,21 +8,10 @@
         }
     </style>
 
-    <style>
-    #list-section h4, #list-section p {
-            display: inline;
-            vertical-align: top;
-            font-family: 'Open Sans', sans-serif;
-            font-size: 16px;
-            line-height: 28px;
-        }
-    </style>
-
 {% block title %} Curriculum {{ object.id }} {% endblock %}
 {% block content %}
 
     <div class="container">
-
         <h1>{{ object.profilo.user.first_name }} {{ object.profilo.user.last_name }}</h1> <br>
         <div class="card" style="width: 12rem;">
             <img src="{{ object.profilo.foto.url }}" class="card-img-top" alt="...">
@@ -34,6 +23,7 @@
             <strong>Telefono: </strong> {{ object.profilo.telefono }}<br>
         </p>
         <button id="mostraform" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Sezione</button>
+        <button id="mostraformel" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button>
         <div id="contenitoreform" class="container" style="display: none">
             <form id="form-container" method="post">
                 {% csrf_token %}
@@ -42,62 +32,78 @@
                 <div class="sezione-form">
                 {{form | crispy}}
                 </div>
-                    <br>
                 {% endfor %}
                 <!--<button id="aggiungi-form" type="button" class="btn btn-primary">Nuova sezione</button>-->
-                <button type="submit" class="btn btn-success">Crea Sezione</button>
+                <button type="submit" name="crea-sezione" class="btn btn-success">Crea Sezione</button>
             </form>
         </div>
 
+        <div id="contenitoreformelement" class="container" style="display: none">
+            <form id="form-container-element" method="post">
+                {% csrf_token %}
+                {{ formset_element.management_form }}
+                {% for form_el in formset_element %}
+                    <div class="element-form">
+                    {{ form_el | crispy }}
+                    </div>
+                {% endfor %}
+                <!-- <button id="aggiungi-form-elemento" type="button" class="btn btn-primary">Nuovo Elemento</button> -->
+                <button type="submit" name="crea-elemento" class="btn btn-success">Crea Elemento</button>
+            </form>
+        </div>
     </div>
 
     <div class="container" id="survey_option">
         <ul class="list-group" id="list-section">
             <div>
                 {% for item in sezioni %}
-                    <h4 id="item{{ item.id }}"><u>{{ item.titolo }}</u></h4>
-                    <div>
-                        <p><a type="button" class="btn btn-outline-danger btn-sm"
-                              href="{% url 'CurriculatorApp:delete-sezione' item.id %}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                 class="bi bi-trash" viewBox="0 0 16 16">
-                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                </svg></a>
-                        </p>
-                    </div>
-                    <div>
-                        {% for element in elementi %}
-                            {% if element.id == item.id %}
+                    <h4 id="item{{ item.id }}"><u>{{ item.titolo }}</u>
+                        <a type="button" class="btn btn-outline-danger btn-sm"
+                          href="{% url 'CurriculatorApp:delete-sezione' item.id %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-trash" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg></a>
+                    </h4>
+                    <!--<button id="mostraformel{{ item.id }}" type="button" onclick="styleElement({{ item.id }})"
+                     class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button> -->
+                    {% for element in elementi %}
+                        {% if element.sezione == item %}
+                            <ul>
+                                <li>{{ element.titolo }}  <a class="btn btn-outline-danger btn-sm"
+                                                             href="{% url 'CurriculatorApp:delete-elemento' element.id %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                    </svg>
+                                </a></li>
                                 <ul>
-                                    <li>{{ element.titolo }}</li>
-                                    <ul>
-                                        {{ element.campi }}
-                                    </ul>
+                                    {% for key, value in element.campi.items %}
+                                        <li>{{ key}}: {{ value }}</li>
+                                    {% endfor %}
                                 </ul>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+                            </ul>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
             </div>
         </ul>
     </div>
 
-    <script>
-
-    </script>
-    <script>
-        let sezioneform = document.querySelectorAll(".sezione-form")
-        let container = document.querySelector("#form-container")
-        let addButton = document.querySelector("#aggiungi-form")
+    <!-- <script>
+        let elementform = document.querySelectorAll(".element-form")
+        let container = document.querySelector("#form-container-element")
+        let addButton = document.querySelector("#aggiungi-form-elemento")
         let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
-        let formNum = sezioneform.length-1
+        let formNum = elementform.length-1
         addButton.addEventListener('click', addForm)
 
         function addForm(e){
             e.preventDefault()
 
-            let newForm = sezioneform[0].cloneNode(true)
+            let newForm = elementform[0].cloneNode(true)
             let formRegex = RegExp(`form-(\\d){1}-`, 'g')
 
             formNum++
@@ -105,11 +111,23 @@
             container.insertBefore(newForm, addButton)
             totalForms.setAttribute('value', `${formNum+1}`)
         }
-    </script>
+    </script> -->
 
     <script>
         document.querySelector("#mostraform").addEventListener("click", () => {
         document.getElementById("contenitoreform").style.display = ""
+    });
+    </script>
+
+    <script>
+    function styleElement(id){
+        document.getElementById("contenitoreformelement").style.display = ""
+    }
+    </script>
+
+    <script>
+        document.querySelector("#mostraformel").addEventListener("click", () => {
+        document.getElementById("contenitoreformelement").style.display = ""
     });
     </script>
 

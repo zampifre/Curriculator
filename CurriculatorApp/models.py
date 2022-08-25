@@ -56,8 +56,8 @@ class Sezione(models.Model):
 
 class Elemento(models.Model):
     titolo = models.CharField(max_length=200, null=False)
-    data_inizio = models.DateField(null=True, default=None)
-    data_fine = models.DateField(null=True, default=None)
+    data_inizio = models.DateField(null=True, default=None, blank=True)
+    data_fine = models.DateField(null=True, default=None, blank=True)
     campi = YAMLField()
     sezione = models.ForeignKey(Sezione, default=None, on_delete=models.CASCADE)
 
