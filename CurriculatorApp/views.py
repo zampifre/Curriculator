@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.deletion import Collector
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import DetailView, TemplateView
@@ -120,6 +121,7 @@ class CurriculumDetail(DetailView):
             form_kwargs={'sezione': Sezione.objects.filter(curriculum=kwargs['object'].id)},
             queryset=Elemento.objects.none(),
         )
+        context['form_elemento'] = ElementForm()
         context['curriculum'] = kwargs['object']
         context['sezioni'] = Sezione.objects.filter(curriculum=kwargs['object'].id)
         context['elementi'] = Elemento.objects.filter(sezione__in=context['sezioni'])
@@ -166,3 +168,29 @@ def delete_sezione(request, pk):
     #refresh della pagina corrente
     return redirect(request.META['HTTP_REFERER'])
     #return redirect('CurriculatorApp:dettagli-curriculum', kwargs={'pk': sezione.curriculum.pk})
+
+def elemento_create(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        is_ajax = True
+    else:
+        is_ajax = False
+
+    if is_ajax:
+        elemento_titolo = request.POST['titolo']
+        elemento_data_inizio = request.POST['data_inizio']
+        elemento_data_fine = request.POST['data_fine']
+        elemento_sezione = Sezione.objects.get(id=request.POST['sezione'])
+        elemento_campi = request.POST['campi']
+
+        print(elemento_campi)
+        print(elemento_data_inizio)
+        if elemento_titolo and elemento_campi and elemento_sezione:
+            print('entrato')
+            elemento = Elemento.objects.create(titolo=elemento_titolo, data_inizio=elemento_data_inizio,
+                                               data_fine=elemento_data_fine, sezione=elemento_sezione,
+                                               campi=elemento_campi)
+            elemento.save()
+            return redirect(request.META['HTTP_REFERER'])
+
+
+

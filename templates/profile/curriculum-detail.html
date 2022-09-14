@@ -22,8 +22,6 @@
             <strong>Email: </strong> {{ object.profilo.user.email }}<br>
             <strong>Telefono: </strong> {{ object.profilo.telefono }}<br>
         </p>
-        <button id="mostraform" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Sezione</button>
-        <button id="mostraformel" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button>
         <div id="contenitoreform" class="container" style="display: none">
             <form id="form-container" method="post">
                 {% csrf_token %}
@@ -44,7 +42,7 @@
                 {{ formset_element.management_form }}
                 {% for form_el in formset_element %}
                     <div class="element-form">
-                    {{ form_el | crispy }}
+                        {{ form_el | crispy }}
                     </div>
                 {% endfor %}
                 <!-- <button id="aggiungi-form-elemento" type="button" class="btn btn-primary">Nuovo Elemento</button> -->
@@ -57,7 +55,8 @@
         <ul class="list-group" id="list-section">
             <div>
                 {% for item in sezioni %}
-                    <h4 id="item{{ item.id }}"><u>{{ item.titolo }}</u>
+                    <button id="mostraformel" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button>
+                    <h4 id="item{{ item.id }}"><u>{{ item.titolo }} </u>
                         <a type="button" class="btn btn-outline-danger btn-sm"
                           href="{% url 'CurriculatorApp:delete-sezione' item.id %}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -65,9 +64,17 @@
                             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                         </svg></a>
+                        <p>
+                        <div id="form-el-ajax{{ item.id }}" class="container-sm" style="display: none">
+                            <form id="form-elemento{{ item.id }}">
+                                {% csrf_token %}
+                                {{ form_elemento | crispy}}
+                                <button type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn btn-success">Crea Elemento</button>
+                            </form>
+                        </div>
+                        <button type="button" id="js-crea-elemento{{ item.id }}" onclick="views_form({{ item.id }})" class="btn btn-success js-crea-elemento">Aggiungi Elemento</button>
+                        </p>
                     </h4>
-                    <!--<button id="mostraformel{{ item.id }}" type="button" onclick="styleElement({{ item.id }})"
-                     class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button> -->
                     {% for element in elementi %}
                         {% if element.sezione == item %}
                             <ul>
@@ -90,28 +97,11 @@
                 {% endfor %}
             </div>
         </ul>
+
+        <button id="mostraform" type="button" class="btn btn-success btn-sm">Aggiungi Sezione</button>
     </div>
 
-    <!-- <script>
-        let elementform = document.querySelectorAll(".element-form")
-        let container = document.querySelector("#form-container-element")
-        let addButton = document.querySelector("#aggiungi-form-elemento")
-        let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
-        let formNum = elementform.length-1
-        addButton.addEventListener('click', addForm)
-
-        function addForm(e){
-            e.preventDefault()
-
-            let newForm = elementform[0].cloneNode(true)
-            let formRegex = RegExp(`form-(\\d){1}-`, 'g')
-
-            formNum++
-            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
-            container.insertBefore(newForm, addButton)
-            totalForms.setAttribute('value', `${formNum+1}`)
-        }
-    </script> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
         document.querySelector("#mostraform").addEventListener("click", () => {
@@ -120,11 +110,38 @@
     </script>
 
     <script>
-    function styleElement(id){
-        document.getElementById("contenitoreformelement").style.display = ""
-    }
+        function crea_elemento(e, id){
+            e.preventDefault()
+            let form_data = {
+               titolo: $("#id_titolo", "#form-elemento" + id).val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                campi: $("#id_campi", "#form-elemento" + id).val(),
+                data_inizio: $("#id_data_inizio", "#form-elemento" + id).val(),
+                data_fine: $("#id_data_fine", "#form-elemento" + id).val(),
+                sezione: id
+            }
+            console.log(form_data)
+            $.ajax({
+                url: '{% url 'CurriculatorApp:newelement' %}',
+                type: 'POST',
+
+                data: form_data,
+                dataType: 'text',
+                success: function (response) {
+                    window.location.reload();
+                },
+                error: function (response) {
+                    $('.error-block').html(response);
+                }
+            })
+        }
     </script>
 
+    <script>
+        function views_form(id){
+            document.getElementById("form-el-ajax" + id).style.display = ""
+        }
+    </script>
     <script>
         document.querySelector("#mostraformel").addEventListener("click", () => {
         document.getElementById("contenitoreformelement").style.display = ""

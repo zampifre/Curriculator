@@ -12,4 +12,5 @@ urlpatterns = [
     path('<int:pk>/detail-curriculum/', CurriculumDetail.as_view(), name='dettagli-curriculum'),
     path('delete-sezione/<int:pk>', views.delete_sezione, name='delete-sezione'),
     path('delete-elemento/<int:pk>', views.delete_elemento, name='delete-elemento'),
+    path('crea-elemento/', views.elemento_create, name='newelement')
 ]

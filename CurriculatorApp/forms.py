@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import modelformset_factory
+from django.forms import modelformset_factory, DateInput
 
 from .models import *
 from crispy_forms.helper import FormHelper
@@ -81,4 +81,12 @@ ElementoFormSet = modelformset_factory(Elemento, form=ElementoForm, extra=1,
                                        fields=['titolo', 'data_inizio', 'data_fine', 'sezione', 'campi'])
 
 
-
+class ElementForm(forms.ModelForm):
+    class Meta:
+        model = Elemento
+        fields = {'titolo', 'data_inizio', 'data_fine', 'campi'}
+        widgets = {
+            'data_inizio': DateInput(attrs={'type': 'date'}),
+            'data_fine': DateInput(attrs={'type': 'date'})
+        }
+        exclude = {'sezione'}
