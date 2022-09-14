@@ -44,41 +44,11 @@ class UserRegisterForm(UserCreationForm):
         self.helper.add_input(Submit('submit', 'Registrati'))
 
 
-class SezioneForm(forms.ModelForm):
+class SectionForm(forms.ModelForm):
     class Meta:
         model = Sezione
-        fields = ['titolo', 'curriculum']
-
-    def __init__(self, *args, **kwargs):
-        curriculum_default = kwargs.pop('curriculum', None)
-        super(SezioneForm, self).__init__(*args, **kwargs)
-        self.fields['curriculum'].widget = forms.HiddenInput()
-        self.fields['curriculum'].disabled = True
-        self.fields['titolo'].help_text = "La sezione verrà aggiunta al CV"
-
-
-SezioneFormSet = modelformset_factory(Sezione, form=SezioneForm, extra=1, fields=['titolo', 'curriculum'])
-
-#SezioneFormSet = modelformset_factory(
-#    Sezione, fields=("titolo", "curriculum"), extra=1
-#)
-
-class ElementoForm(forms.ModelForm):
-    class Meta:
-        model = Elemento
-        fields = ['titolo', 'data_inizio', 'data_fine', 'sezione', 'campi']
-
-    def __init__(self, sezione, *args,  **kwargs):
-        self.sezione = sezione
-        super(ElementoForm, self).__init__(*args, **kwargs)
-        self.fields['sezione'].queryset = self.sezione
-        self.fields['campi'].help_text = "Inserisci ogni voce tra le virgolette, separa i campi con ':'"
-        #self.fields['sezione'].widget = forms.HiddenInput()
-        #self.fields['sezione'].disabled = True
-
-
-ElementoFormSet = modelformset_factory(Elemento, form=ElementoForm, extra=1,
-                                       fields=['titolo', 'data_inizio', 'data_fine', 'sezione', 'campi'])
+        fields = {'titolo'}
+        exclude = {'curriculum'}
 
 
 class ElementForm(forms.ModelForm):

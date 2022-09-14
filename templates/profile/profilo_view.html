@@ -43,7 +43,7 @@
                             <a class="btn btn-success btn-sm" href="{% url 'CurriculatorApp:dettagli-curriculum' pk=item.pk%}">
                                 Visualizza
                             </a>
-                            <a class="btn btn-danger btn-sm" href="{% url 'CurriculatorApp:delete-curriculum' pk=item.pk %}">
+                            <a class="btn btn-danger btn-sm" href="{% url 'CurriculatorApp:delete-curriculum' pk=item.pk %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
                                 Cancella
                             </a>
                         </td>

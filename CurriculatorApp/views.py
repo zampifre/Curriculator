@@ -108,46 +108,12 @@ class CurriculumDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CurriculumDetail, self).get_context_data(**kwargs)
-        context['formset'] = SezioneFormSet(
-            initial=[
-                {
-                    'curriculum': kwargs['object'].id,
-                    'titolo': ''
-                }
-            ],
-            queryset=Sezione.objects.none(),
-        )
-        context['formset_element'] = ElementoFormSet(
-            form_kwargs={'sezione': Sezione.objects.filter(curriculum=kwargs['object'].id)},
-            queryset=Elemento.objects.none(),
-        )
         context['form_elemento'] = ElementForm()
+        context['form_sezione'] = SectionForm()
         context['curriculum'] = kwargs['object']
         context['sezioni'] = Sezione.objects.filter(curriculum=kwargs['object'].id)
         context['elementi'] = Elemento.objects.filter(sezione__in=context['sezioni'])
         return context
-
-    def post(self, *args, **kwargs):
-        formset = SezioneFormSet(data=self.request.POST, initial=[{'curriculum': kwargs['pk']}])
-        if self.request.method == 'POST' and 'crea-sezione' in self.request.POST:
-            if formset.is_valid():
-                formset.save()
-                cv = Curriculum.objects.get(id=kwargs['pk'])
-                cv.data_modifica = datetime.date.today()
-                cv.save()
-                return redirect(self.request.META.get('HTTP_REFERER'))
-        else:
-            formset.clean()
-            formset = ElementoFormSet(data=self.request.POST, form_kwargs={'sezione': Sezione.objects.filter(curriculum=kwargs['pk'])})
-            if formset.is_valid():
-                formset.save()
-                cv = Curriculum.objects.get(id=kwargs['pk'])
-                cv.data_modifica = datetime.date.today()
-                cv.save()
-                return redirect(self.request.META.get('HTTP_REFERER'))
-
-        return self.render_to_response({'formset': formset})
-
 
 def delete_elemento(request, pk):
     elemento = Elemento.objects.get(id=pk)
@@ -181,16 +147,29 @@ def elemento_create(request):
         elemento_data_fine = request.POST['data_fine']
         elemento_sezione = Sezione.objects.get(id=request.POST['sezione'])
         elemento_campi = request.POST['campi']
-
-        print(elemento_campi)
-        print(elemento_data_inizio)
         if elemento_titolo and elemento_campi and elemento_sezione:
-            print('entrato')
             elemento = Elemento.objects.create(titolo=elemento_titolo, data_inizio=elemento_data_inizio,
                                                data_fine=elemento_data_fine, sezione=elemento_sezione,
                                                campi=elemento_campi)
+            cv = elemento_sezione.curriculum
+            cv.data_modifica = datetime.date.today()
+            cv.save()
             elemento.save()
             return redirect(request.META['HTTP_REFERER'])
 
 
+def sezione_create(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        is_ajax = True
+    else:
+        is_ajax = False
 
+    if is_ajax:
+        sezione_titolo = request.POST['titolo']
+        sezione_curriculum = Curriculum.objects.get(pk=request.POST['curriculum'])
+        if sezione_titolo:
+            sezione = Sezione.objects.create(titolo=sezione_titolo, curriculum=sezione_curriculum)
+            sezione.save()
+            sezione_curriculum.data_modifica = datetime.date.today()
+            sezione_curriculum.save()
+            return redirect(request.META['HTTP_REFERER'])

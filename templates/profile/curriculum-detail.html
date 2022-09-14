@@ -16,42 +16,24 @@
         <div class="card" style="width: 12rem;">
             <img src="{{ object.profilo.foto.url }}" class="card-img-top" alt="...">
         </div>
-    <hr>
+        <hr>
         <p>
             <strong>Data di nascita:</strong> {{ object.profilo.data_nascita }}<br>
             <strong>Luogo di nascita: </strong> {{ object.profilo.luogo_nascita }} <br>
             <strong>Email: </strong> {{ object.profilo.user.email }}<br>
             <strong>Telefono: </strong> {{ object.profilo.telefono }}<br>
         </p>
+        <hr>
+    </div>
 
-    <hr>
-        <div id="contenitoreform" class="container" style="display: none">
-            <form id="form-container" method="post">
-                {% csrf_token %}
-                {{formset.management_form}}
-                {% for form in formset %}
-                <div class="sezione-form">
-                {{form | crispy}}
-                </div>
-                {% endfor %}
-                <!--<button id="aggiungi-form" type="button" class="btn btn-primary">Nuova sezione</button>-->
-                <button type="submit" name="crea-sezione" class="btn btn-success">Crea Sezione</button>
-            </form>
-        </div>
-
-        <div id="contenitoreformelement" class="container" style="display: none">
-            <form id="form-container-element" method="post">
-                {% csrf_token %}
-                {{ formset_element.management_form }}
-                {% for form_el in formset_element %}
-                    <div class="element-form">
-                        {{ form_el | crispy }}
-                    </div>
-                {% endfor %}
-                <!-- <button id="aggiungi-form-elemento" type="button" class="btn btn-primary">Nuovo Elemento</button> -->
-                <button type="submit" name="crea-elemento" class="btn btn-success">Crea Elemento</button>
-            </form>
-        </div>
+    <div id="form-sec-ajax" class="container-sm" style="display: none">
+        <form id="form-sezione">
+            {% csrf_token %}
+            {{ form_sezione | crispy }}
+            <br>
+            <button type="submit" name="crea-sezione" onclick="crea_sezione(event, {{ object.id }})" class="btn-sm btn-success">Conferma</button>
+            <hr>
+        </form>
     </div>
 
     <div class="container" id="survey_option">
@@ -61,7 +43,7 @@
                     <!--<button id="mostraformel" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button> -->
                     <h4 id="item{{ item.id }}">{{ item.titolo }}
                         <a type="button" class="btn btn-outline-danger btn-sm"
-                          href="{% url 'CurriculatorApp:delete-sezione' item.id %}">
+                          href="{% url 'CurriculatorApp:delete-sezione' item.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                              class="bi bi-trash" viewBox="0 0 16 16">
                             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
@@ -75,39 +57,50 @@
                                 <button type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn-sm btn-success">Conferma</button>
                             </form>
                         </div>
-                        <button type="button" id="js-crea-elemento{{ item.id }}" onclick="views_form({{ item.id }})" class="btn-sm btn-success js-crea-elemento">Aggiungi Elemento</button>
                         </p>
                     </h4>
+
                     {% for element in elementi %}
                         {% if element.sezione == item %}
-                            <ul>
-                                <li>{{ element.titolo }}  <a class="btn btn-outline-danger btn-sm"
-                                                             href="{% url 'CurriculatorApp:delete-elemento' element.id %}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                         class="bi bi-trash" viewBox="0 0 16 16">
-                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                    </svg>
-                                </a></li>
+                            <div>
                                 <ul>
-                                    {% for key, value in element.campi.items %}
-                                        <li>{{ key}}: {{ value }}</li>
-                                    {% endfor %}
+                                    <li>{{ element.titolo }}  <a class="btn btn-outline-danger btn-sm"
+                                                             href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                             class="bi bi-trash" viewBox="0 0 16 16">
+                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                        </svg>
+                                    </a></li>
+                                    <ul>
+                                        {% for key, value in element.campi.items %}
+                                            {% if value %}
+                                            <li>{{ key}}: {{ value }}</li>
+                                            {% endif %}
+                                            <li>{{ key}}</li>
+                                        {% endfor %}
+                                    </ul>
                                 </ul>
-                            </ul>
+                            </div>
+                            <br>
                         {% endif %}
                     {% endfor %}
+
+                    <p>
+                        <button type="button" id="js-crea-elemento{{ item.id }}" onclick="views_form({{ item.id }})" class="btn-sm btn-success js-crea-elemento">Aggiungi Elemento</button>
+                    </p>
                 {% endfor %}
             </div>
         </ul>
-
         <hr>
+
         <div class="container">
-            <button id="mostraform" type="button" class="btn btn-success btn-sm">Aggiungi Sezione</button>
+            <button id="mostraform" type="button" class="btn-sm btn-success" onclick="views_form_section()">Aggiungi Sezione</button>
         </div>
+
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
         document.querySelector("#mostraform").addEventListener("click", () => {
@@ -140,6 +133,35 @@
                     $('.error-block').html(response);
                 }
             })
+        }
+    </script>
+
+    <script>
+        function crea_sezione(e, id_cv){
+            e.preventDefault()
+            let form_data_section = {
+                titolo: $("#id_titolo", "#form-sezione").val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                curriculum: id_cv
+            }
+            $.ajax({
+                url: '{% url 'CurriculatorApp:newsection' %}',
+                type: 'POST',
+                data: form_data_section,
+                dataType: 'text',
+                success: function (response) {
+                    window.location.reload();
+                },
+                error: function (response) {
+                    $('.error-block').html(response);
+                }
+            })
+        }
+    </script>
+
+    <script>
+        function views_form_section(){
+            document.getElementById("form-sec-ajax").style.display = ""
         }
     </script>
 
