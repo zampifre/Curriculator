@@ -16,12 +16,15 @@
         <div class="card" style="width: 12rem;">
             <img src="{{ object.profilo.foto.url }}" class="card-img-top" alt="...">
         </div>
+    <hr>
         <p>
             <strong>Data di nascita:</strong> {{ object.profilo.data_nascita }}<br>
             <strong>Luogo di nascita: </strong> {{ object.profilo.luogo_nascita }} <br>
             <strong>Email: </strong> {{ object.profilo.user.email }}<br>
             <strong>Telefono: </strong> {{ object.profilo.telefono }}<br>
         </p>
+
+    <hr>
         <div id="contenitoreform" class="container" style="display: none">
             <form id="form-container" method="post">
                 {% csrf_token %}
@@ -55,8 +58,8 @@
         <ul class="list-group" id="list-section">
             <div>
                 {% for item in sezioni %}
-                    <button id="mostraformel" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button>
-                    <h4 id="item{{ item.id }}"><u>{{ item.titolo }} </u>
+                    <!--<button id="mostraformel" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button> -->
+                    <h4 id="item{{ item.id }}">{{ item.titolo }}
                         <a type="button" class="btn btn-outline-danger btn-sm"
                           href="{% url 'CurriculatorApp:delete-sezione' item.id %}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -69,10 +72,10 @@
                             <form id="form-elemento{{ item.id }}">
                                 {% csrf_token %}
                                 {{ form_elemento | crispy}}
-                                <button type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn btn-success">Crea Elemento</button>
+                                <button type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn-sm btn-success">Conferma</button>
                             </form>
                         </div>
-                        <button type="button" id="js-crea-elemento{{ item.id }}" onclick="views_form({{ item.id }})" class="btn btn-success js-crea-elemento">Aggiungi Elemento</button>
+                        <button type="button" id="js-crea-elemento{{ item.id }}" onclick="views_form({{ item.id }})" class="btn-sm btn-success js-crea-elemento">Aggiungi Elemento</button>
                         </p>
                     </h4>
                     {% for element in elementi %}
@@ -98,7 +101,10 @@
             </div>
         </ul>
 
-        <button id="mostraform" type="button" class="btn btn-success btn-sm">Aggiungi Sezione</button>
+        <hr>
+        <div class="container">
+            <button id="mostraform" type="button" class="btn btn-success btn-sm">Aggiungi Sezione</button>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
