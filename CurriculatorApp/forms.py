@@ -54,9 +54,24 @@ class SectionForm(forms.ModelForm):
 class ElementForm(forms.ModelForm):
     class Meta:
         model = Elemento
-        fields = {'titolo', 'data_inizio', 'data_fine', 'campi'}
+        fields = ['titolo', 'data_inizio', 'data_fine', 'campi']
         widgets = {
             'data_inizio': DateInput(attrs={'type': 'date'}),
-            'data_fine': DateInput(attrs={'type': 'date'})
+            'data_fine': DateInput(attrs={'type': 'date'}),
+            'campi': forms.Textarea(attrs={'placeholder': 'Modena: Via Vivarelli'})
         }
         exclude = {'sezione'}
+        labels = {
+            'data_fine': 'Data Fine <a tabindex="0" class="popover-dismiss" role="button" data-toggle="popover" \
+               data-trigger="focus" title="Omettendo la data di fine l\'evento è in corso! Inserendo la data di fine l\'evento è concluso!" \
+               data-content=""> \
+               <i class="fa fa-info-circle fa-1x" aria-hidden="true"></i></a>',
+            'data_inizio':  'Data Inizio <a tabindex="0" class="popover-dismiss" role="button" data-toggle="popover" \
+               data-trigger="focus" title="Non è necessario specificare la data di inizio inserendo quella di fine!" \
+               data-content=""> \
+               <i class="fa fa-info-circle fa-1x" aria-hidden="true"></i></a>'
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ElementForm, self).__init__(*args, **kwargs)
+        self.fields['campi'].help_text = "YAMLfield: https://yaml.org/spec/1.2.2/"
