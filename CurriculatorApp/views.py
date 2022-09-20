@@ -163,6 +163,25 @@ def elemento_create(request):
             elemento.save()
             return redirect(request.META['HTTP_REFERER'])
 
+def element_update(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        is_ajax = True
+    else:
+        is_ajax = False
+
+    if is_ajax:
+        elemento = Elemento.objects.get(id=request.POST['id_elemento'])
+        elemento.titolo = request.POST['titolo']
+        elemento.data_inizio = request.POST['data_inizio']
+        elemento.data_fine = request.POST['data_fine']
+        elemento.campi = request.POST['campi']
+        elemento.sezione = Sezione.objects.get(id=request.POST['sezione'])
+        if elemento.titolo and elemento.campi and elemento.sezione:
+            cv = elemento.sezione.curriculum
+            cv.data_modifica = datetime.date.today()
+            cv.save()
+            elemento.save()
+            return redirect(request.META['HTTP_REFERER'])
 
 def sezione_create(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -180,20 +199,3 @@ def sezione_create(request):
             sezione_curriculum.save()
             return redirect(request.META['HTTP_REFERER'])
 
-def sezione_update(request):
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        is_ajax = True
-    else:
-        is_ajax = False
-
-    if request.method == "POST" and is_ajax:
-        try:
-            sezione = Sezione.objects.get(id=request.POST['id_sezione'])
-            sezione.curriculum = Curriculum.objects.get(pk=request.POST['id_cv'])
-            sezione.titolo = request.POST['titolo']
-            sezione.save()
-            return JsonResponse({'stato': 'successo', 'msg': 'Modificato con successo'})
-        except Sezione.DoesNotExist:
-            return JsonResponse({'stato': 'fallito', 'msg': 'La sezione non esiste'})
-    else:
-        return JsonResponse({'stato': 'fallito', 'msg': 'Richiesta non valida'})

@@ -14,5 +14,6 @@ urlpatterns = [
     path('delete-elemento/<int:pk>', views.delete_elemento, name='delete-elemento'),
     path('crea-elemento/', views.elemento_create, name='newelement'),
     path('crea-sezione/', views.sezione_create, name='newsection'),
-    path('aggiorna-sezione/', views.sezione_update, name='updatesection')
+    path('aggiorna-elemento/', views.element_update, name='editelement'),
+
 ]

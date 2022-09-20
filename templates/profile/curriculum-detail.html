@@ -1,6 +1,7 @@
 {% extends 'Curriculator/base.html' %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
+{% load dict_extra %}
 
     <style>
         .hidden{
@@ -36,22 +37,12 @@
         </form>
     </div>
 
-    <div id="form-sec-edit" class="container-sm" style="display: none">
-        <form id="form-sezione-edit">
-            {% csrf_token %}
-            {{ form_sezione | crispy }}
-            <br>
-            <button type="submit" name="crea-sezione" onclick="" class="btn-sm btn-success">Modifica</button>
-            <hr>
-        </form>
-    </div>
-
     <div class="container" id="survey_option">
         <ul class="list-group" id="list-section">
             <div>
                 {% for item in sezioni %}
                     <!--<button id="mostraformel" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button> -->
-                    <h4 id="item{{ item.id }}" onclick="edit()">{{ item.titolo }}
+                    <h4 id="item{{ item.id }}">{{ item.titolo }}
                         <a type="button" class="btn btn-outline-danger btn-sm"
                            href="{% url 'CurriculatorApp:delete-sezione' item.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -60,19 +51,30 @@
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                         </svg>
                         </a>
-                        <button id="sezione-update" class="btn-sm btn-primary">Modifica</button>
                         <p>
-                        <div id="form-el-ajax{{ item.id }}" class="container-sm" style="display: none">
-                            <form id="form-elemento{{ item.id }}">
-                                {% csrf_token %}
-                                {{ form_elemento | crispy}}
-                                <button type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn-sm btn-success">Salva e crea Elemento</button>
-                            </form>
-                        </div>
                     </h4>
 
                     {% for element in elementi %}
                         {% if element.sezione == item %}
+                            <div id="form-el-ajax{{ item.id }}" class="container-sm" style="display: none">
+                                <form id="form-elemento{{ item.id }}">
+                                    {% csrf_token %}
+                                    <hr>
+                                    {{ form_elemento | crispy}}
+                                    <button id="button{{ item.id }}" type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn-sm btn-success">Salva e crea Elemento</button>
+                                    <hr>
+                                </form>
+                            </div>
+
+                            <div id="form-element-edit{{ item.id }}" class="container" style="display: none">
+                                <form id="edit-element{{ item.id }}">
+                                    {% csrf_token %}
+                                    <hr>
+                                    {{ form_elemento | crispy }}
+                                    <button id="edit{{ item.id }}" type="submit" name="crea-elemento" onclick="modifica_elemento(event, {{ item.id }}, {{ element.id }})" class="btn-sm btn-success">Aggiorna</button>
+                                    <hr>
+                                </form>
+                            </div>
                             <div>
                                 <ul>
                                     {% if element.data_inizio and element.data_fine %}
@@ -85,6 +87,7 @@
                                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                         </svg>
                                     </a>
+                                        <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
                                     </li>
                                     {% endif %}
                                     {% if element.data_fine and not element.data_inizio %}
@@ -97,6 +100,7 @@
                                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                         </svg>
                                     </a>
+                                        <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
                                     </li>
                                      {% endif %}
                                     {% if element.data_inizio and not element.data_fine %}
@@ -109,6 +113,7 @@
                                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                         </svg>
                                     </a>
+                                        <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
                                     </li>
                                      {% endif %}
                                     {% if not element.data_inizio and not element.data_fine %}
@@ -121,6 +126,7 @@
                                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                         </svg>
                                     </a>
+                                         <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
                                     </li>
                                      {% endif %}
                                     <ul>
@@ -156,6 +162,9 @@
    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 
+    <script id="element_campi">
+        let dict = JSON.parse(document.getElementById('py_dict').textContent);
+    </script>
 
     <script>
         document.querySelector("#mostraform").addEventListener("click", () => {
@@ -181,6 +190,35 @@
                 dataType: 'text',
                 success: function (response) {
                     document.getElementById("form-elemento" + id).reset();
+                    window.location.reload();
+                },
+                error: function (response) {
+                    $('.error-block').html(response);
+                }
+            })
+        }
+    </script>
+
+    <script>
+        function modifica_elemento(e, id, id_elemento){
+            e.preventDefault()
+            let form_data = {
+               titolo: $("#id_titolo", "#edit-element" + id).val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                campi: $("#id_campi", "#edit-element" + id).val(),
+                data_inizio: $("#id_data_inizio", "#edit-element" + id).val(),
+                data_fine: $("#id_data_fine", "#edit-element" + id).val(),
+                sezione: id,
+                id_elemento: id_elemento
+            }
+            console.log(form_data)
+            $.ajax({
+                url: '{% url 'CurriculatorApp:editelement' %}',
+                type: 'POST',
+                data: form_data,
+                dataType: 'text',
+                success: function (response) {
+                    document.getElementById("edit-element" + id).reset();
                     window.location.reload();
                 },
                 error: function (response) {
@@ -221,13 +259,58 @@
     </script>
 
     <script>
+        function views_form_edit_element(id, obj){
+            document.getElementById("form-element-edit" + id).style.display = ""
+            $("#id_titolo", "#edit-element" + id).val(obj[0])
+            if(obj[1] !== '') {
+                let list_date = obj[1].split(' ')
+                let day = (list_date[0]);
+                let month = get_month(list_date[1]);
+                console.log(month)
+                let today = list_date[2] + "-" + (month) + "-" + (day);
+                $('#id_data_inizio', '#edit-element' + id).val(today);
+            }
+            if(obj[2] !== ''){
+                let list_date = obj[2].split(' ')
+                let day = (list_date[0]);
+                let month = get_month(list_date[1]);
+                console.log(month)
+                let today = list_date[2] + "-" + (month) + "-" + (day);
+                $('#id_data_fine', '#edit-element' + id).val(today);
+            }
+            let textedjson = JSON.stringify(obj[3]).replace('\{\\\"', '').replace('\"', '').replace('\\\"', '').replace('\\\"', ' ').replace('\\\"\}\"', '')
+            $("#id_campi", "#edit-element" + id).val(textedjson)
+        }
+    </script>
+
+    <script>
+        function get_month(mese){
+            const anno = {
+                'Gennaio': "01",
+                'Febbraio': "02",
+                'Marzo': "03",
+                'Aprile': "04",
+                'Maggio': "05",
+                'Giugno': "06",
+                'Luglio': "07",
+                'Agosto': "08",
+                'Settembre': "09",
+                'Ottobre': "10",
+                'Novembre': "11",
+                'Dicembre': "12",
+            }
+            return anno[mese]
+        }
+    </script>
+
+    <script>
         function views_form_section(){
             document.getElementById("form-sec-ajax").style.display = ""
         }
     </script>
 
     <script>
-        function views_form(id){
+        function views_form(id, title, campi){
             document.getElementById("form-el-ajax" + id).style.display = ""
         }
     </script>

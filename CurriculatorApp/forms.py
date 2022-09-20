@@ -75,3 +75,4 @@ class ElementForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ElementForm, self).__init__(*args, **kwargs)
         self.fields['campi'].help_text = "YAMLfield: https://yaml.org/spec/1.2.2/"
+
