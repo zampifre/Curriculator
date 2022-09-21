@@ -199,3 +199,20 @@ def sezione_create(request):
             sezione_curriculum.save()
             return redirect(request.META['HTTP_REFERER'])
 
+def sezione_update(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        is_ajax = True
+    else:
+        is_ajax = False
+
+    if is_ajax:
+        print('entrato')
+        sezione = Sezione.objects.get(id=request.POST['id_sezione'])
+        sezione.titolo = request.POST['titolo']
+        cv = Curriculum.objects.get(pk=sezione.curriculum.id)
+        print(sezione)
+        if sezione.titolo:
+            sezione.save()
+            cv.data_modifica = datetime.date.today()
+            cv.save()
+            return redirect(request.META['HTTP_REFERER'])

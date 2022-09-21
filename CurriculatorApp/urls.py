@@ -15,5 +15,5 @@ urlpatterns = [
     path('crea-elemento/', views.elemento_create, name='newelement'),
     path('crea-sezione/', views.sezione_create, name='newsection'),
     path('aggiorna-elemento/', views.element_update, name='editelement'),
-
+    path('aggiorna-sezione/', views.sezione_update, name='editsection'),
 ]

@@ -41,7 +41,6 @@
         <ul class="list-group" id="list-section">
             <div>
                 {% for item in sezioni %}
-                    <!--<button id="mostraformel" type="button" class="btn btn-outline-dark btn-sm">Aggiungi Elemento</button> -->
                     <h4 id="item{{ item.id }}">{{ item.titolo }}
                         <a type="button" class="btn btn-outline-danger btn-sm"
                            href="{% url 'CurriculatorApp:delete-sezione' item.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
@@ -51,8 +50,20 @@
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                         </svg>
                         </a>
+                        <button id="sezione-update" onclick="views_form_edit_section({{ item.id }}, '{{ item.titolo }}')" class="btn-sm btn-primary">Modifica</button>
                         <p>
                     </h4>
+
+                    <div id="form-section-edit{{ item.id }}" class="container-sm" style="display: none">
+                        <form id="sezione-form{{ item.id }}">
+                            {% csrf_token %}
+                            {{ form_sezione | crispy }}
+                            <br>
+                            <button id="modifica-sezione{{ item.id }}" type="submit" onclick="modifica_sezione(event, {{ item.id }})" class="btn-sm btn-success">Modifica</button>
+                            <hr>
+                        </form>
+                    </div>
+
 
                     {% for element in elementi %}
                         {% if element.sezione == item %}
@@ -71,7 +82,7 @@
                                     {% csrf_token %}
                                     <hr>
                                     {{ form_elemento | crispy }}
-                                    <button id="edit{{ item.id }}" type="submit" name="crea-elemento" onclick="modifica_elemento(event, {{ item.id }}, {{ element.id }})" class="btn-sm btn-success">Aggiorna</button>
+                                    <button id="edit{{ item.id }}" type="submit" name="crea-elemento" onclick="modifica_elemento(event, {{ item.id }}, {{ element.id }})" class="btn-sm btn-success">Modifica</button>
                                     <hr>
                                 </form>
                             </div>
@@ -87,7 +98,7 @@
                                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                         </svg>
                                     </a>
-                                        <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
+                                        <button id="elemento-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
                                     </li>
                                     {% endif %}
                                     {% if element.data_fine and not element.data_inizio %}
@@ -243,6 +254,7 @@
                 data: form_data_section,
                 dataType: 'text',
                 success: function (response) {
+                    document.getElementById("form-sezione").reset()
                     window.location.reload();
                 },
                 error: function (response) {
@@ -280,6 +292,37 @@
             }
             let textedjson = JSON.stringify(obj[3]).replace('\{\\\"', '').replace('\"', '').replace('\\\"', '').replace('\\\"', ' ').replace('\\\"\}\"', '')
             $("#id_campi", "#edit-element" + id).val(textedjson)
+        }
+    </script>
+
+    <script>
+        function modifica_sezione(e, id){
+            e.preventDefault()
+            let form_data = {
+                titolo: $("#id_titolo", "#sezione-form" + id).val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                id_sezione: id
+            }
+            $.ajax({
+                url: '{% url 'CurriculatorApp:editsection' %}',
+                type: 'POST',
+                data: form_data,
+                dataType: 'text',
+                success: function (response) {
+                    document.getElementById("sezione-form" + id).reset()
+                    window.location.reload();
+                },
+                error: function (response) {
+                    $('.error-block').html(response);
+                }
+            })
+        }
+    </script>
+
+    <script>
+        function views_form_edit_section(id, titolo){
+            document.getElementById("form-section-edit" + id).style.display = ""
+            $("#id_titolo", "#sezione-form" + id).val(titolo)
         }
     </script>
 
