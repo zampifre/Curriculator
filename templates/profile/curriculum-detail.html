@@ -64,19 +64,18 @@
                         </form>
                     </div>
 
+                    <div id="form-el-ajax{{ item.id }}" class="container-sm" style="display: none">
+                        <form id="form-elemento{{ item.id }}">
+                            {% csrf_token %}
+                            <hr>
+                            {{ form_elemento | crispy}}
+                            <button id="button{{ item.id }}" type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn-sm btn-success">Salva e crea Elemento</button>
+                            <hr>
+                        </form>
+                    </div>
 
                     {% for element in elementi %}
                         {% if element.sezione == item %}
-                            <div id="form-el-ajax{{ item.id }}" class="container-sm" style="display: none">
-                                <form id="form-elemento{{ item.id }}">
-                                    {% csrf_token %}
-                                    <hr>
-                                    {{ form_elemento | crispy}}
-                                    <button id="button{{ item.id }}" type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn-sm btn-success">Salva e crea Elemento</button>
-                                    <hr>
-                                </form>
-                            </div>
-
                             <div id="form-element-edit{{ item.id }}" class="container" style="display: none">
                                 <form id="edit-element{{ item.id }}">
                                     {% csrf_token %}
@@ -170,7 +169,7 @@
 
     </div>
 
-   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 
     <script id="element_campi">
@@ -222,7 +221,6 @@
                 sezione: id,
                 id_elemento: id_elemento
             }
-            console.log(form_data)
             $.ajax({
                 url: '{% url 'CurriculatorApp:editelement' %}',
                 type: 'POST',
@@ -236,7 +234,6 @@
                     $('.error-block').html(response);
                 }
             })
-
         }
     </script>
 
@@ -353,10 +350,11 @@
     </script>
 
     <script>
-        function views_form(id, title, campi){
+        function views_form(id){
             document.getElementById("form-el-ajax" + id).style.display = ""
         }
     </script>
+
     <script>
         document.querySelector("#mostraformel").addEventListener("click", () => {
         document.getElementById("contenitoreformelement").style.display = ""

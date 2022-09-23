@@ -1,19 +1,11 @@
-import datetime
-import json
-
+from itertools import chain
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models.deletion import Collector
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template.loader import render_to_string
-from django.urls import reverse_lazy, reverse
-from django.views import View
+from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
-from django.views.generic.detail import SingleObjectMixin
-
 from .forms import *
 from django.contrib import messages
-from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic.edit import CreateView
 from django.contrib.auth import authenticate, login
 from .models import *
 
@@ -112,8 +104,17 @@ class CurriculumDetail(DetailView):
         context['form_sezione'] = SectionForm()
         context['curriculum'] = kwargs['object']
         context['sezioni'] = Sezione.objects.filter(curriculum=kwargs['object'].id)
-        context['elementi'] = Elemento.objects.filter(sezione__in=context['sezioni'])
+        elementi_correnti = Elemento.objects.filter(sezione__in=context['sezioni'])
+        elementi_correnti = elementi_correnti.filter(data_fine=None)
+        elementi_correnti = elementi_correnti.order_by('-data_inizio')
+        elementi_terminati = Elemento.objects.filter(sezione__in=context['sezioni'])
+        elementi_terminati = elementi_terminati.exclude(data_fine=None)
+        elementi_terminati = elementi_terminati.order_by('-data_fine', '-data_inizio')
+        queryset_finale = list(chain(elementi_correnti, elementi_terminati))
+        print(queryset_finale)
+        context['elementi'] = queryset_finale
         return context
+
 
 def delete_elemento(request, pk):
     elemento = Elemento.objects.get(id=pk)
@@ -173,7 +174,11 @@ def element_update(request):
         elemento = Elemento.objects.get(id=request.POST['id_elemento'])
         elemento.titolo = request.POST['titolo']
         elemento.data_inizio = request.POST['data_inizio']
+        if elemento.data_inizio == '':
+            elemento.data_inizio = None
         elemento.data_fine = request.POST['data_fine']
+        if elemento.data_fine == '':
+            elemento.data_fine = None
         elemento.campi = request.POST['campi']
         elemento.sezione = Sezione.objects.get(id=request.POST['sezione'])
         if elemento.titolo and elemento.campi and elemento.sezione:
