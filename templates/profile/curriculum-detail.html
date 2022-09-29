@@ -7,6 +7,14 @@
         .hidden{
             display: none;
         }
+
+        .ghost {
+        opacity: 0.4;
+        }
+
+        .list-group {
+            margin: 20px;
+        }
     </style>
 
 {% block title %} Curriculum {{ object.id }} {% endblock %}
@@ -24,7 +32,6 @@
             <strong>Email: </strong> {{ object.profilo.user.email }}<br>
             <strong>Telefono: </strong> {{ object.profilo.telefono }}<br>
         </p>
-        <hr>
     </div>
 
     <div id="form-sec-ajax" class="container-sm" style="display: none">
@@ -38,114 +45,120 @@
     </div>
 
     <div class="container" id="survey_option">
-        <ul class="list-group" id="list-section">
-            <div>
-                {% for item in sezioni %}
-                    <h4 id="item{{ item.id }}">{{ item.titolo }}
-                        <a type="button" class="btn btn-outline-danger btn-sm"
-                           href="{% url 'CurriculatorApp:delete-sezione' item.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+        {% for item in sezioni %}
+            <div class="container-section" id="list-section" draggable="false">
+                <hr>
+                <h4 id="item{{ item.id }}">{{ item.titolo }}
+                    <a type="button" class="btn btn-outline-danger btn-sm"
+                       href="{% url 'CurriculatorApp:delete-sezione' item.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                              class="bi bi-trash" viewBox="0 0 16 16">
                             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                         </svg>
-                        </a>
-                        <button id="sezione-update" onclick="views_form_edit_section({{ item.id }}, '{{ item.titolo }}')" class="btn-sm btn-primary">Modifica</button>
-                        <p>
-                    </h4>
+                    </a>
+                    <button id="sezione-update" onclick="views_form_edit_section({{ item.id }}, '{{ item.titolo }}')" class="btn-sm btn-primary">Modifica</button>
+                    <p>
+                </h4>
 
-                    <div id="form-section-edit{{ item.id }}" class="container-sm" style="display: none">
-                        <form id="sezione-form{{ item.id }}">
-                            {% csrf_token %}
-                            {{ form_sezione | crispy }}
-                            <br>
-                            <button id="modifica-sezione{{ item.id }}" type="submit" onclick="modifica_sezione(event, {{ item.id }})" class="btn-sm btn-success">Modifica</button>
-                            <hr>
-                        </form>
-                    </div>
+                <div id="form-section-edit{{ item.id }}" class="container-sm" style="display: none">
+                    <form id="sezione-form{{ item.id }}">
+                        {% csrf_token %}
+                        {{ form_sezione | crispy }}
+                        <br>
+                        <button id="modifica-sezione{{ item.id }}" type="submit" onclick="modifica_sezione(event, {{ item.id }})" class="btn-sm btn-success">Modifica</button>
+                        <hr>
+                    </form>
+                </div>
 
-                    <div id="form-el-ajax{{ item.id }}" class="container-sm" style="display: none">
-                        <form id="form-elemento{{ item.id }}">
-                            {% csrf_token %}
-                            <hr>
-                            {{ form_elemento | crispy}}
-                            <button id="button{{ item.id }}" type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn-sm btn-success">Salva e crea Elemento</button>
-                            <hr>
-                        </form>
-                    </div>
+                <div id="form-el-ajax{{ item.id }}" class="container-sm" style="display: none">
+                    <form id="form-elemento{{ item.id }}">
+                        {% csrf_token %}
+                        <hr>
+                        {{ form_elemento | crispy}}
+                        <button id="button{{ item.id }}" type="submit" name="crea-elemento" onclick="crea_elemento(event, {{ item.id }})" class="btn-sm btn-success">Salva e crea Elemento</button>
+                        <hr>
+                    </form>
+                </div>
 
+                <div id="form-element-edit{{ item.id }}" class="container" style="display: none">
+                    <form id="edit-element{{ item.id }}">
+                        {% csrf_token %}
+                        <hr>
+                        {{ form_elemento | crispy }}
+                        <input type="hidden" id="pk_elemento" value="">
+                        <button id="edit{{ item.id }}" type="submit" name="crea-elemento" onclick="modifica_elemento(event, {{ item.id }})" class="btn-sm btn-success">Modifica</button>
+                        <hr>
+                    </form>
+                </div>
+
+                <div class="list-group" id="elem">
                     {% for element in elementi %}
                         {% if element.sezione == item %}
-                            <div id="form-element-edit{{ item.id }}" class="container" style="display: none">
-                                <form id="edit-element{{ item.id }}">
-                                    {% csrf_token %}
-                                    <hr>
-                                    {{ form_elemento | crispy }}
-                                    <button id="edit{{ item.id }}" type="submit" name="crea-elemento" onclick="modifica_elemento(event, {{ item.id }}, {{ element.id }})" class="btn-sm btn-success">Modifica</button>
-                                    <hr>
-                                </form>
-                            </div>
-                            <div>
+                            <div id="elem_{{ element.id }}" data-id="{{ element.id }}" class="list-group-item">
                                 <ul>
                                     {% if element.data_inizio and element.data_fine %}
-                                        <li><b>{{ element.data_inizio }} - {{ element.data_fine }}</b> {{ element.titolo }}
-                                        <a class="btn btn-outline-danger btn-sm"
-                                           href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                             class="bi bi-trash" viewBox="0 0 16 16">
-                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                        </svg>
-                                    </a>
-                                        <button id="elemento-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
-                                    </li>
+                                     <li><b>{{ element.data_inizio }} - {{ element.data_fine }}</b> {{ element.titolo }}
+                                            <a class="btn btn-outline-danger btn-sm"
+                                            href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                                    class="bi bi-trash" viewBox="0 0 16 16">
+                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                </svg>
+                                            </a>
+                                            <button id="elemento-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
+                                        </li>
                                     {% endif %}
+
                                     {% if element.data_fine and not element.data_inizio %}
-                                        <li><b>(terminato) {{ element.data_fine }}</b> {{ element.titolo }}
-                                        <a class="btn btn-outline-danger btn-sm"
-                                           href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                             class="bi bi-trash" viewBox="0 0 16 16">
-                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                        </svg>
-                                    </a>
-                                        <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
-                                    </li>
-                                     {% endif %}
+                                            <li><b>(terminato) {{ element.data_fine }}</b> {{ element.titolo }}
+                                                <a class="btn btn-outline-danger btn-sm"
+                                                   href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                                        class="bi bi-trash" viewBox="0 0 16 16">
+                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                    </svg>
+                                                </a>
+                                                <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
+                                        </li>
+                                    {% endif %}
+
                                     {% if element.data_inizio and not element.data_fine %}
                                         <li><b>{{ element.data_inizio }} - att.</b> {{ element.titolo }}
-                                        <a class="btn btn-outline-danger btn-sm"
-                                           href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                             class="bi bi-trash" viewBox="0 0 16 16">
-                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                        </svg>
-                                    </a>
-                                        <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
-                                    </li>
-                                     {% endif %}
+                                            <a class="btn btn-outline-danger btn-sm"
+                                               href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                                     class="bi bi-trash" viewBox="0 0 16 16">
+                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                </svg>
+                                            </a>
+                                            <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
+                                        </li>
+                                    {% endif %}
+
                                     {% if not element.data_inizio and not element.data_fine %}
                                         <li>{{ element.titolo }}
-                                        <a class="btn btn-outline-danger btn-sm"
-                                           href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                             class="bi bi-trash" viewBox="0 0 16 16">
-                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                        </svg>
-                                    </a>
-                                         <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
-                                    </li>
-                                     {% endif %}
+                                            <a class="btn btn-outline-danger btn-sm"
+                                               href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                                     class="bi bi-trash" viewBox="0 0 16 16">
+                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                </svg>
+                                            </a>
+                                            <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
+                                        </li>
+                                    {% endif %}
                                     <ul>
                                         {% for key, value in element.campi.items %}
                                             {% if key and value %}
-                                            <li>{{ key}}: {{ value }}</li>
+                                                <li>{{ key}}: {{ value }}</li>
                                             {% endif %}
                                             {% if key and not value %}
-                                            <li>{{ key }}</li>
+                                                <li>{{ key }}</li>
                                             {% endif %}
                                         {% endfor %}
                                     </ul>
@@ -154,23 +167,24 @@
                             <br>
                         {% endif %}
                     {% endfor %}
-
-                    <p>
+                    <p draggable="false">
                         <button type="button" id="js-crea-elemento{{ item.id }}" onclick="views_form({{ item.id }})" class="btn-sm btn-success js-crea-elemento">Aggiungi Elemento</button>
                     </p>
-                {% endfor %}
+                </div>
             </div>
-        </ul>
-        <hr>
-
-        <div class="container">
-            <button id="mostraform" type="button" class="btn-sm btn-success" onclick="views_form_section()">Aggiungi Sezione</button>
-        </div>
-
+        {% endfor %}
+                <hr>
+                <div class="container">
+                    <button id="mostraform" type="button" class="btn-sm btn-success" onclick="views_form_section()">Aggiungi Sezione</button>
+                </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
 
     <script id="element_campi">
         let dict = JSON.parse(document.getElementById('py_dict').textContent);
@@ -181,6 +195,15 @@
         document.getElementById("contenitoreform").style.display = ""
     });
     </script>
+
+    <script>
+    $("#survey_option .container-section").each(function (i){
+        $('.list-group', this).sortable()
+        let serial = $('.list-group', this).sortable('serialize');
+        console.log(serial)
+    })
+    </script>
+
 
     <script>
         function crea_elemento(e, id){
@@ -210,7 +233,7 @@
     </script>
 
     <script>
-        function modifica_elemento(e, id, id_elemento){
+        function modifica_elemento(e, id){
             e.preventDefault()
             let form_data = {
                titolo: $("#id_titolo", "#edit-element" + id).val(),
@@ -219,7 +242,7 @@
                 data_inizio: $("#id_data_inizio", "#edit-element" + id).val(),
                 data_fine: $("#id_data_fine", "#edit-element" + id).val(),
                 sezione: id,
-                id_elemento: id_elemento
+                id_elemento: $("#pk_elemento").val()
             }
             $.ajax({
                 url: '{% url 'CurriculatorApp:editelement' %}',
@@ -271,11 +294,11 @@
         function views_form_edit_element(id, obj){
             document.getElementById("form-element-edit" + id).style.display = ""
             $("#id_titolo", "#edit-element" + id).val(obj[0])
+            $("#pk_elemento").val(obj[4])
             if(obj[1] !== '') {
                 let list_date = obj[1].split(' ')
                 let day = (list_date[0]);
                 let month = get_month(list_date[1]);
-                console.log(month)
                 let today = list_date[2] + "-" + (month) + "-" + (day);
                 $('#id_data_inizio', '#edit-element' + id).val(today);
             }
@@ -283,7 +306,6 @@
                 let list_date = obj[2].split(' ')
                 let day = (list_date[0]);
                 let month = get_month(list_date[1]);
-                console.log(month)
                 let today = list_date[2] + "-" + (month) + "-" + (day);
                 $('#id_data_fine', '#edit-element' + id).val(today);
             }
