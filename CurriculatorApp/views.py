@@ -1,5 +1,7 @@
+import re
 from itertools import chain
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
@@ -88,7 +90,7 @@ class CurriclumCreate(CreateView):
         profile_id = self.request.user.pk
         return reverse_lazy('CurriculatorApp:profilo', kwargs={'pk': profile_id})
 
-def curriculum_delete(request,pk):
+def curriculum_delete(request, pk):
     curriculum = Curriculum.objects.get(id=pk)
     curriculum.delete()
     messages.error(request, 'Sezione eliminata con successo!')
@@ -104,15 +106,14 @@ class CurriculumDetail(DetailView):
         context['form_sezione'] = SectionForm()
         context['curriculum'] = kwargs['object']
         context['sezioni'] = Sezione.objects.filter(curriculum=kwargs['object'].id)
-        elementi_correnti = Elemento.objects.filter(sezione__in=context['sezioni'])
-        elementi_correnti = elementi_correnti.filter(data_fine=None)
-        elementi_correnti = elementi_correnti.order_by('-data_inizio')
-        elementi_terminati = Elemento.objects.filter(sezione__in=context['sezioni'])
-        elementi_terminati = elementi_terminati.exclude(data_fine=None)
-        elementi_terminati = elementi_terminati.order_by('-data_fine', '-data_inizio')
-        queryset_finale = list(chain(elementi_correnti, elementi_terminati))
-        print(queryset_finale)
-        context['elementi'] = queryset_finale
+        #elementi_correnti = Elemento.objects.filter(sezione__in=context['sezioni'])
+        #elementi_correnti = elementi_correnti.filter(data_fine=None)
+        #elementi_correnti = elementi_correnti.order_by('-data_inizio')
+        #elementi_terminati = Elemento.objects.filter(sezione__in=context['sezioni'])
+        #elementi_terminati = elementi_terminati.exclude(data_fine=None)
+        #elementi_terminati = elementi_terminati.order_by('-data_fine', '-data_inizio')
+        #queryset_finale = list(chain(elementi_correnti, elementi_terminati))
+        context['elementi'] = Elemento.objects.filter(sezione__in=context['sezioni'])
         return context
 
 
@@ -221,3 +222,18 @@ def sezione_update(request):
             cv.data_modifica = datetime.date.today()
             cv.save()
             return redirect(request.META['HTTP_REFERER'])
+
+def sort(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        is_ajax = True
+    else:
+        is_ajax = False
+
+    if is_ajax:
+        list_id = [int(s) for s in re.findall(r'\b\d+\b', request.POST['ordine'])]
+        lista_ordine = []
+        for id_elemento in list_id:
+            elemento = Elemento.objects.get(pk=id_elemento)
+            lista_ordine.append(elemento)
+        print(lista_ordine)
+        return HttpResponse('ok')

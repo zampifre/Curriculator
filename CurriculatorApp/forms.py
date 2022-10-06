@@ -47,7 +47,7 @@ class SectionForm(forms.ModelForm):
     class Meta:
         model = Sezione
         fields = {'titolo'}
-        exclude = {'curriculum'}
+        exclude = {'curriculum', 'ordinamento_manuale'}
 
 
 class ElementForm(forms.ModelForm):
@@ -59,7 +59,7 @@ class ElementForm(forms.ModelForm):
             'data_fine': DateInput(attrs={'type': 'date'}),
             'campi': forms.Textarea(attrs={'placeholder': 'Modena: Via Vivarelli'})
         }
-        exclude = {'sezione'}
+        exclude = {'sezione', 'posizione'}
         labels = {
             'data_fine': 'Data Fine <a tabindex="0" class="popover-dismiss" role="button" data-toggle="popover" \
                data-trigger="focus" title="Omettendo la data di fine l\'evento è in corso! Inserendo la data di fine l\'evento è concluso!" \

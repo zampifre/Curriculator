@@ -44,6 +44,7 @@ class Curriculum(models.Model):
 class Sezione(models.Model):
     titolo = models.CharField(max_length=100, null=False)
     curriculum = models.ForeignKey(Curriculum, default=None, on_delete=models.CASCADE)
+    ordinamento_manuale = models.BooleanField(default=None, blank=True, null=False)
 
     def delete_url(self):
         return reverse('delete-sezione', kwargs={'pk': self.id})
@@ -60,9 +61,11 @@ class Elemento(models.Model):
     data_fine = models.DateField(null=True, default=None, blank=True)
     campi = YAMLField()
     sezione = models.ForeignKey(Sezione, default=None, on_delete=models.CASCADE)
+    posizione = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name_plural = "Elementi"
+        ordering = ['posizione']
 
     def __str__(self):
         return self.titolo

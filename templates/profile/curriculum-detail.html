@@ -34,6 +34,8 @@
         </p>
     </div>
 
+
+
     <div id="form-sec-ajax" class="container-sm" style="display: none">
         <form id="form-sezione">
             {% csrf_token %}
@@ -46,7 +48,7 @@
 
     <div class="container" id="survey_option">
         {% for item in sezioni %}
-            <div class="container-section" id="list-section" draggable="false">
+            <div class="container-section" id="list-section{{ item.id }}">
                 <hr>
                 <h4 id="item{{ item.id }}">{{ item.titolo }}
                     <a type="button" class="btn btn-outline-danger btn-sm"
@@ -57,7 +59,11 @@
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                         </svg>
                     </a>
-                    <button id="sezione-update" onclick="views_form_edit_section({{ item.id }}, '{{ item.titolo }}')" class="btn-sm btn-primary">Modifica</button>
+                    <button id="sezione-update" onclick="views_form_edit_section({{ item.id }}, '{{ item.titolo }}')" class="btn btn-outline-primary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
+                    </button>
                     <p>
                 </h4>
 
@@ -93,6 +99,11 @@
                 </div>
 
                 <div class="list-group" id="elem">
+                    <div id="toggle{{ item.id }}" class="form-check form-switch order-toggle" draggable="false">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked{{ item.id }}">
+                        <input type="hidden" id="pk_sezione" value="false">
+                        <label class="form-check-label" for="flexSwitchCheckChecked">Abilita l'ordinamento manuale</label>
+                    </div>
                     {% for element in elementi %}
                         {% if element.sezione == item %}
                             <div id="elem_{{ element.id }}" data-id="{{ element.id }}" class="list-group-item">
@@ -107,7 +118,11 @@
                                                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                                 </svg>
                                             </a>
-                                            <button id="elemento-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
+                                            <button id="elemento-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn btn-outline-primary btn-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                                </svg>
+                                            </button>
                                         </li>
                                     {% endif %}
 
@@ -121,7 +136,11 @@
                                                         <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                                     </svg>
                                                 </a>
-                                                <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
+                                                <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn btn-outline-primary btn-sm">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                                    </svg>
+                                                </button>
                                         </li>
                                     {% endif %}
 
@@ -135,7 +154,11 @@
                                                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                                 </svg>
                                             </a>
-                                            <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
+                                            <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn btn-outline-primary btn-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                                </svg>
+                                            </button>
                                         </li>
                                     {% endif %}
 
@@ -149,7 +172,11 @@
                                                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                                 </svg>
                                             </a>
-                                            <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn-sm btn-primary">Modifica</button>
+                                            <button id="sezione-update" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn btn-outline-primary btn-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                                </svg>
+                                            </button>
                                         </li>
                                     {% endif %}
                                     <ul>
@@ -185,10 +212,12 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-    <script id="element_campi">
+    <!-- <script id="element_campi">
         let dict = JSON.parse(document.getElementById('py_dict').textContent);
-    </script>
+    </script> -->
 
     <script>
         document.querySelector("#mostraform").addEventListener("click", () => {
@@ -197,13 +226,87 @@
     </script>
 
     <script>
-    $("#survey_option .container-section").each(function (i){
-        $('.list-group', this).sortable()
-        let serial = $('.list-group', this).sortable('serialize');
-        console.log(serial)
-    })
+        $('.order-toggle').click(function (){
+            if($("#pk_sezione", this).val() === 'false') {
+                $("#pk_sezione", this).val('true')
+            } else {
+                $("#pk_sezione", this).val('false')
+            }
+            location.reload()
+        })
     </script>
 
+    <script>
+        function check_ability(item){
+            let bool
+            if($("#pk_sezione", item).val() === 'false'){
+                bool = false
+            } else {
+                bool = true
+            }
+            return bool
+        }
+    </script>
+
+    <script>
+        $("#survey_option .container-section").each(function (i){
+            call($('.list-group', this))
+        })
+        function call(item){
+            let serial;
+            item.sortable({
+                create: function (event, ui){
+                    let mode = check_ability($('.order-toggle', this))
+                    console.log(mode)
+                    if(mode){
+                        console.log('entrato2')
+                        item.sortable({ disabled: false })
+                    } else {
+                        item.sortable({ disabled: true })
+                    }
+                },
+                disabled: false,
+                update: function (){
+                    serial = item.sortable('serialize')
+                    console.log(serial)
+                    let data_send = {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        ordine: serial,
+                    }
+                    $.ajax({
+                        url: '{% url 'CurriculatorApp:sortelement' %}',
+                        type: 'POST',
+                        data: data_send,
+                        dataType: 'text',
+                        success: function (response) {
+                            location.reload();
+                            },
+                        error: function (response) {
+                            $('.error-block').html(response);
+                        }
+                    })
+                },
+            }).disableSelection();
+            $("#saveorder").click(function (){
+                let data_send = {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    ordine: serial,
+                }
+                $.ajax({
+                    url: '{% url 'CurriculatorApp:sortelement' %}',
+                    type: 'POST',
+                    data: data_send,
+                    dataType: 'text',
+                    success: function (response) {
+                        window.location.reload();
+                        },
+                    error: function (response) {
+                        $('.error-block').html(response);
+                    }
+            })
+        })
+    }
+    </script>
 
     <script>
         function crea_elemento(e, id){
@@ -377,10 +480,10 @@
         }
     </script>
 
-    <script>
+    <!-- <script>
         document.querySelector("#mostraformel").addEventListener("click", () => {
         document.getElementById("contenitoreformelement").style.display = ""
     });
-    </script>
+    </script> -->
 
 {% endblock %}
