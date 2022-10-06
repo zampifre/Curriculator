@@ -237,3 +237,24 @@ def sort(request):
             elemento.posizione = index
             elemento.save()
         return HttpResponse('ok')
+
+def sort_manual(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        is_ajax = True
+    else:
+        is_ajax = False
+
+    if is_ajax:
+        elementi = Elemento.objects.filter(sezione__in=request.POST['id'])
+        elementi_no_data_fine = elementi.filter(data_fine=None)
+        elementi_no_data_fine = elementi_no_data_fine.order_by('-data_inizio')
+        list_no_data_fine = elementi_no_data_fine.values_list('pk', flat=True)
+        elementi_terminati = elementi.exclude(data_fine=None)
+        elementi_terminati = elementi_terminati.order_by('-data_fine', '-data_inizio')
+        list_terminati = elementi_terminati.values_list('pk', flat=True)
+        queryset_finale = list(chain(list_no_data_fine, list_terminati))
+        for index, id_elemento in enumerate(queryset_finale):
+            elemento = Elemento.objects.get(pk=id_elemento)
+            elemento.posizione = index
+            elemento.save()
+    return HttpResponse('ok')

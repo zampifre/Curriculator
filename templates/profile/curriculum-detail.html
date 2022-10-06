@@ -102,6 +102,7 @@
                     <div id="toggle{{ item.id }}" class="form-check form-switch order-toggle" draggable="false">
                         <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked{{ item.id }}">
                         <input type="hidden" id="pk_sezione" value="false">
+                        <input type="hidden" id="sez_id" value="{{ item.id }}">
                         <label class="form-check-label" for="flexSwitchCheckChecked">Abilita l'ordinamento manuale</label>
                     </div>
                     {% for element in elementi %}
@@ -231,6 +232,22 @@
                 $("#pk_sezione", this).val('true')
             } else {
                 $("#pk_sezione", this).val('false')
+                let data_send = {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    id: $("#sez_id", this).val()
+                }
+                $.ajax({
+                    url: '{% url 'CurriculatorApp:sortdefault' %}',
+                    type: 'POST',
+                    data: data_send,
+                    dataType: 'text',
+                    success: function (response) {
+                            location.reload();
+                            },
+                    error: function (response) {
+                        $('.error-block').html(response);
+                    }
+                })
             }
             location.reload()
         })
