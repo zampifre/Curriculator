@@ -232,8 +232,8 @@ def sort(request):
     if is_ajax:
         list_id = [int(s) for s in re.findall(r'\b\d+\b', request.POST['ordine'])]
         lista_ordine = []
-        for id_elemento in list_id:
+        for index, id_elemento in enumerate(list_id):
             elemento = Elemento.objects.get(pk=id_elemento)
-            lista_ordine.append(elemento)
-        print(lista_ordine)
+            elemento.posizione = index
+            elemento.save()
         return HttpResponse('ok')
