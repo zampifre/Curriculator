@@ -41,7 +41,6 @@ class Profilo(DetailView):
 
 
 class ProfileUpdateView(LoginRequiredMixin, TemplateView):
-    user_form = UserForm
     profile_form = ProfiloForm
     template_name = 'profile/aggiorna-profilo.html'
 
@@ -49,16 +48,14 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
         post_data = request.POST or None
         file_data = request.FILES or None
 
-        user_form = UserForm(post_data, instance=request.user.profile)
         profile_form = ProfiloForm(post_data, file_data, instance=request.user.profile)
 
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
+        if profile_form.is_valid():
             profile_form.save()
             messages.success(request, 'Il tuo profilo è stato aggiornato correttamente!')
             return redirect(reverse('CurriculatorApp:profilo', kwargs={'pk': self.request.user.pk}))
 
-        context = self.get_context_data(user_form=user_form, profile_form=profile_form)
+        context = self.get_context_data(profile_form=profile_form)
 
         return self.render_to_response(context)
 
@@ -106,13 +103,7 @@ class CurriculumDetail(DetailView):
         context['form_sezione'] = SectionForm()
         context['curriculum'] = kwargs['object']
         context['sezioni'] = Sezione.objects.filter(curriculum=kwargs['object'].id)
-        #elementi_correnti = Elemento.objects.filter(sezione__in=context['sezioni'])
-        #elementi_correnti = elementi_correnti.filter(data_fine=None)
-        #elementi_correnti = elementi_correnti.order_by('-data_inizio')
-        #elementi_terminati = Elemento.objects.filter(sezione__in=context['sezioni'])
-        #elementi_terminati = elementi_terminati.exclude(data_fine=None)
-        #elementi_terminati = elementi_terminati.order_by('-data_fine', '-data_inizio')
-        #queryset_finale = list(chain(elementi_correnti, elementi_terminati))
+        print(kwargs['object'].profilo)
         context['elementi'] = Elemento.objects.filter(sezione__in=context['sezioni'])
         return context
 
