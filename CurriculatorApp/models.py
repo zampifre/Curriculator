@@ -44,7 +44,7 @@ class Curriculum(models.Model):
 class Sezione(models.Model):
     titolo = models.CharField(max_length=100, null=False)
     curriculum = models.ForeignKey(Curriculum, default=None, on_delete=models.CASCADE)
-    ordinamento_manuale = models.BooleanField(default=None, blank=True, null=False)
+    ordinamento_manuale = models.BooleanField(default=False, blank=True, null=False)
 
     def delete_url(self):
         return reverse('delete-sezione', kwargs={'pk': self.id})

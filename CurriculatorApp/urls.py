@@ -18,4 +18,5 @@ urlpatterns = [
     path('aggiorna-sezione/', views.sezione_update, name='editsection'),
     path('ordinamento-elemento/', views.sort, name='sortelement'),
     path('ordinamento-default/', views.sort_manual, name='sortdefault'),
+    path('setting-manuale/', views.set_manual, name='setmanual'),
 ]

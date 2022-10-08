@@ -221,6 +221,9 @@ def sort(request):
         is_ajax = False
 
     if is_ajax:
+        sezione = Sezione.objects.get(id=request.POST['sezione_id'])
+        sezione.ordinamento_manuale = True
+        sezione.save()
         list_id = [int(s) for s in re.findall(r'\b\d+\b', request.POST['ordine'])]
         lista_ordine = []
         for index, id_elemento in enumerate(list_id):
@@ -236,6 +239,9 @@ def sort_manual(request):
         is_ajax = False
 
     if is_ajax:
+        sezione = Sezione.objects.get(id=request.POST['id'])
+        sezione.ordinamento_manuale = False
+        sezione.save()
         elementi = Elemento.objects.filter(sezione__in=request.POST['id'])
         elementi_no_data_fine = elementi.filter(data_fine=None)
         elementi_no_data_fine = elementi_no_data_fine.order_by('-data_inizio')
@@ -249,3 +255,15 @@ def sort_manual(request):
             elemento.posizione = index
             elemento.save()
     return HttpResponse('ok')
+
+
+def set_manual(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        is_ajax = True
+    else:
+        is_ajax = False
+
+    if is_ajax:
+        sezione = Sezione.objects.get(id=request.POST['id'])
+        sezione.ordinamento_manuale = True
+        sezione.save()

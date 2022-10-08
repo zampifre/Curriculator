@@ -98,9 +98,9 @@
                     </form>
                 </div>
 
-                <div id="toggle{{ item.id }}" class="form-check form-switch order-toggle" draggable="false">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked{{ item.id }}">
-                        <input type="hidden" id="pk_sezione" value="false">
+                <div id="toggle{{ item.id }}" class="form-check form-switch order-toggle" draggable="true">
+                        <input class="form-check-input" style="transform: scale(1.2);" type="checkbox" id="flexSwitchCheckChecked{{ item.id }}">
+                        <input type="hidden" id="ordman" value="{{ item.ordinamento_manuale }}">
                         <input type="hidden" id="sez_id" value="{{ item.id }}">
                         <label class="form-check-label" for="flexSwitchCheckChecked">Ordinamento Manuale</label>
                 </div>
@@ -203,6 +203,7 @@
                         {% endif %}
                     {% endfor %}
                 </div>
+                <br>
                 <p draggable="false">
                     <button type="button" id="js-crea-elemento{{ item.id }}" onclick="views_form({{ item.id }})" class="btn-sm btn-success js-crea-elemento">Aggiungi Elemento</button>
                 </p>
@@ -223,27 +224,40 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-    <!-- <script id="element_campi">
-        let dict = JSON.parse(document.getElementById('py_dict').textContent);
-    </script> -->
-
     <script>
         document.querySelector("#mostraform").addEventListener("click", () => {
         document.getElementById("contenitoreform").style.display = ""
     });
     </script>
 
+
+
     <script>
         $('.order-toggle').click(function (){
-            console.log($("#pk_sezione", this).val())
-            if($("#pk_sezione", this).val() === 'false') {
-                if(confirm('Confermi di voler passare all\'ordinamento automatico?')) {
-                    $("#pk_sezione", this).val('true')
+            if($("#ordman", this).val() === 'False') {
+                if(confirm('Confermi di voler passare all\'ordinamento automatico in questa sezione?')) {
+                    $("#ordman", this).val = 'True'
+                    let data_send = {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        id: $("#sez_id", this).val()
+                    }
+                    $.ajax({
+                        url: '{% url 'CurriculatorApp:setmanual' %}',
+                        type: 'POST',
+                        data: data_send,
+                        dataType: 'text',
+                        success: function (response) {
+                            location.reload();
+                        },
+                        error: function (response) {
+                            $('.error-block').html(response);
+                        }
+                    })
                 } else {
                     return false;
                 }
             } else {
-                $("#pk_sezione", this).val('false')
+                $("#ordman", this).val = 'False'
                 let data_send = {
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                     id: $("#sez_id", this).val()
@@ -262,13 +276,14 @@
                 })
             }
             location.reload()
+            return final
         })
     </script>
 
     <script>
         function check_ability(item){
             let bool
-            if($("#pk_sezione", item).val() === 'false'){
+            if($("#ordman", item).val() === 'False'){
                 bool = false
             } else {
                 bool = true
@@ -302,6 +317,7 @@
                     let data_send = {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         ordine: serial,
+                        sezione_id: $("#sez_id", $('.order-toggle', item.parent())).val()
                     }
                     $.ajax({
                         url: '{% url 'CurriculatorApp:sortelement' %}',
@@ -509,11 +525,5 @@
             document.getElementById("form-el-ajax" + id).style.display = ""
         }
     </script>
-
-    <!-- <script>
-        document.querySelector("#mostraformel").addEventListener("click", () => {
-        document.getElementById("contenitoreformelement").style.display = ""
-    });
-    </script> -->
 
 {% endblock %}
