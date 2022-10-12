@@ -20,7 +20,9 @@
         </ul>
         </div>
         <br>
-        <a class="btn btn-primary btn-sm" onclick="location.href='{% url 'CurriculatorApp:crea-curriculum'%}'">Nuovo Curriculum</a>
+        <!-- <a class="btn btn-success btn-sm" onclick="location.href='{% url 'CurriculatorApp:crea-curriculum'%}'">Nuovo Curriculum</a> -->
+        <a class="btn btn-success btn-sm" href="{% url 'CurriculatorApp:create_cv' %}" onclick="alert('Verrà creato un curriculum con data odierna di creazione')"> Nuovo Curriculum </a>
+
         <div class="container">
         <br>
         <h4> I tuoi curriculum: </h4>

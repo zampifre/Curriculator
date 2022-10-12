@@ -63,6 +63,15 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
         return self.post(request, *args, **kwargs)
 
 
+def new_cv(request):
+    profilo = Profile.objects.get(user=request.user)
+    data_creazione = datetime.date.today()
+    data_modifica = datetime.date.today()
+    cv = Curriculum.objects.create(profilo=profilo, data_creazione=data_creazione, data_modifica=data_modifica)
+    cv.save()
+    return redirect(request.META['HTTP_REFERER'])
+
+
 class CurriclumCreate(CreateView):
     model = Curriculum
     fields = []
@@ -267,3 +276,5 @@ def set_manual(request):
         sezione = Sezione.objects.get(id=request.POST['id'])
         sezione.ordinamento_manuale = True
         sezione.save()
+    return HttpResponse('ok')
+

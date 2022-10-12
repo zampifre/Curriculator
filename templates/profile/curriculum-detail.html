@@ -4,14 +4,6 @@
 {% load dict_extra %}
 
     <style>
-        .hidden{
-            display: none;
-        }
-
-        .ghost {
-        opacity: 0.4;
-        }
-
         .list-group {
             margin: 20px;
         }
@@ -23,15 +15,16 @@
     <div class="container">
         <h1>{{ object.profilo.user.first_name }} {{ object.profilo.user.last_name }}</h1>
         <hr>
-        <div class="card" style="width: 12rem;">
+        <div id="imageprofile" class="card" style="width: 12rem;">
             <img src="{{ object.profilo.foto.url }}" class="card-img-top" alt="...">
         </div>
-        <p>
+        <br>
+        <div id="dati">
             <h6><strong>Data di nascita: </strong> {{ object.profilo.data_nascita }}</h6>
             <h6><strong>Luogo di nascita: </strong> {{ object.profilo.luogo_nascita }}</h6>
             <h6><strong>Email: </strong> {{ object.profilo.user.email }}</h6>
             <h6><strong>Telefono: </strong> {{ object.profilo.telefono }} </h6>
-        </p>
+        </div>
     </div>
 
 
@@ -51,6 +44,12 @@
             <div class="container-section" id="list-section{{ item.id }}">
                 <hr>
                 <h4 id="item{{ item.id }}">{{ item.titolo }}
+
+                    <button id="sezione-update" onclick="views_form_edit_section({{ item.id }}, '{{ item.titolo }}')" class="btn btn-outline-primary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
+                    </button>
                     <a type="button" class="btn btn-outline-danger btn-sm"
                        href="{% url 'CurriculatorApp:delete-sezione' item.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -59,11 +58,6 @@
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                         </svg>
                     </a>
-                    <button id="sezione-update" onclick="views_form_edit_section({{ item.id }}, '{{ item.titolo }}')" class="btn btn-outline-primary btn-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                        </svg>
-                    </button>
                     <p>
                 </h4>
 
@@ -230,12 +224,22 @@
     });
     </script>
 
-
+    <script>
+        window.onload = function() {
+            $('.order-toggle').each(function (){
+                if($("#ordman", this).val() === 'False') {
+                    $('.form-check-input', this).attr("checked", false)
+                } else {
+                    $('.form-check-input', this).attr("checked", true)
+                }
+            })
+        };
+    </script>
 
     <script>
         $('.order-toggle').click(function (){
             if($("#ordman", this).val() === 'False') {
-                if(confirm('Confermi di voler passare all\'ordinamento automatico in questa sezione?')) {
+                if(confirm('Confermi di voler passare all\'ordinamento manuale in questa sezione?')) {
                     $("#ordman", this).val = 'True'
                     let data_send = {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -258,6 +262,7 @@
                 }
             } else {
                 $("#ordman", this).val = 'False'
+                alert('Ritornerai all\'ordinamento automatico')
                 let data_send = {
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                     id: $("#sez_id", this).val()
@@ -300,6 +305,7 @@
             console.log(item.parent())
             let serial;
             item.sortable({
+                axis: "y",
                 create: function (event, ui){
                     let mode = check_ability($('.order-toggle', item.parent()))
                     console.log(mode)

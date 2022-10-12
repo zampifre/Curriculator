@@ -19,4 +19,5 @@ urlpatterns = [
     path('ordinamento-elemento/', views.sort, name='sortelement'),
     path('ordinamento-default/', views.sort_manual, name='sortdefault'),
     path('setting-manuale/', views.set_manual, name='setmanual'),
+    path('create-cv/', views.new_cv, name='create_cv'),
 ]
