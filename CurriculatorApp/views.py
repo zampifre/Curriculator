@@ -3,8 +3,11 @@ from itertools import chain
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
+from xhtml2pdf import pisa
+
 from .forms import *
 from django.contrib import messages
 from django.views.generic.edit import CreateView
@@ -291,3 +294,27 @@ def set_manual(request):
         sezione.save()
     return HttpResponse('ok')
 
+def pdf_report_create(request, cv_id):
+    cv = Curriculum.objects.get(id=cv_id)
+    sezioni = Sezione.objects.filter(curriculum=cv.id)
+    elementi = Elemento.objects.filter(sezione__in=sezioni)
+    template_path = "profile/pdfreport.html"
+
+    context = {
+        'object': cv,
+        'sezioni': sezioni,
+        'elementi': elementi,
+    }
+    print(context)
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="cv_report.pdf"'
+
+    template = get_template(template_path)
+
+    html = template.render(context)
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('We had error <pre>' + html + '</pre>')
+    return response

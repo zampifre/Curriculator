@@ -21,4 +21,5 @@ urlpatterns = [
     path('setting-manuale/', views.set_manual, name='setmanual'),
     path('create-cv/', views.new_cv, name='create_cv'),
     path('<int:pk>/pdf-template/', CVTemplatePdf.as_view(), name='templatepdf'),
+    path('create-pdf/<int:cv_id>', views.pdf_report_create, name='createpdf'),
 ]
