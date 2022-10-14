@@ -116,6 +116,19 @@ class CurriculumDetail(DetailView):
         context['elementi'] = Elemento.objects.filter(sezione__in=context['sezioni'])
         return context
 
+class CVTemplatePdf(DetailView):
+    model = Curriculum
+    template_name = 'profile/template-pdf.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CVTemplatePdf, self).get_context_data(**kwargs)
+        context['form_elemento'] = ElementForm()
+        context['form_sezione'] = SectionForm()
+        context['curriculum'] = kwargs['object']
+        context['sezioni'] = Sezione.objects.filter(curriculum=kwargs['object'].id)
+        print(kwargs['object'].profilo)
+        context['elementi'] = Elemento.objects.filter(sezione__in=context['sezioni'])
+        return context
 
 def delete_elemento(request, pk):
     elemento = Elemento.objects.get(id=pk)
