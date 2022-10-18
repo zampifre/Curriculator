@@ -450,7 +450,7 @@
                 let today = list_date[2] + "-" + (month) + "-" + (day);
                 $('#id_data_fine', '#edit-element' + id).val(today);
             }
-            let textedjson = JSON.stringify(obj[3]).replace('\{\\\"', '').replace('\"', '').replace('\\\"', '').replace('\\\"', ' ').replace('\\\"\}\"', '').replace('}\"', '')
+            let textedjson = JSON.stringify(obj[3]).replace(/{/g, '').replace(/"/g, '').replace(/\\/g, '').replace(/}/g, '').replace(/, /g, '\n')
             $("#id_campi", "#edit-element" + id).val(textedjson)
         }
     </script>
