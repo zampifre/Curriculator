@@ -25,7 +25,7 @@
             <h6><strong>Email: </strong> {{ object.profilo.user.email }}</h6>
             <h6><strong>Telefono: </strong> {{ object.profilo.telefono }} </h6>
         </div>
-        <a class="btn btn-success btn-sm" style="float: right;" href="{% url 'CurriculatorApp:templatepdf' pk=object.pk %}"> Visualizza Anteprima</a>
+        <a class="btn btn-success float-end btn-sm" href="{% url 'CurriculatorApp:templatepdf' pk=object.pk %}"> Visualizza Anteprima</a>
         <br>
     </div>
 
@@ -259,6 +259,7 @@
                             $('.error-block').html(response);
                         }
                     })
+                    location.reload()
                 } else {
                     return false;
                 }
@@ -281,8 +282,8 @@
                         $('.error-block').html(response);
                     }
                 })
+                location.reload()
             }
-            location.reload()
             return final
         })
     </script>
@@ -310,9 +311,7 @@
                 axis: "y",
                 create: function (event, ui){
                     let mode = check_ability($('.order-toggle', item.parent()))
-                    console.log(mode)
                     if(mode){
-                        console.log('entrato2')
                         item.sortable({ disabled: false })
                     } else {
                         item.sortable({ disabled: true })
@@ -322,7 +321,6 @@
                 update: function (){
                     location.reload()
                     serial = item.sortable('serialize')
-                    console.log(serial)
                     let data_send = {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         ordine: serial,
@@ -341,7 +339,7 @@
                         }
                     })
                 },
-            }).disableSelection();
+            })
             $("#saveorder").click(function (){
                 let data_send = {
                     csrfmiddlewaretoken: '{{ csrf_token }}',

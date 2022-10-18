@@ -7,7 +7,6 @@ from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 from xhtml2pdf import pisa
-
 from .forms import *
 from django.contrib import messages
 from django.views.generic.edit import CreateView
@@ -305,7 +304,6 @@ def pdf_report_create(request, cv_id):
         'sezioni': sezioni,
         'elementi': elementi,
     }
-    print(context)
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="cv_report.pdf"'
