@@ -259,7 +259,6 @@
                             $('.error-block').html(response);
                         }
                     })
-                    location.reload()
                 } else {
                     return false;
                 }
@@ -271,31 +270,36 @@
                     id: $("#sez_id", this).val()
                 }
                 $.ajax({
-                    url: '{% url 'CurriculatorApp:sortdefault' %}',
-                    type: 'POST',
-                    data: data_send,
-                    dataType: 'text',
-                    success: function (response) {
-                            location.reload();
-                            },
-                    error: function (response) {
-                        $('.error-block').html(response);
-                    }
+                        url: '{% url 'CurriculatorApp:setmanual' %}',
+                        type: 'POST',
+                        data: data_send,
+                        dataType: 'text',
+                        success: function (response) {
+                            $.ajax({
+                                url: '{% url 'CurriculatorApp:sortdefault' %}',
+                                type: 'POST',
+                                data: data_send,
+                                dataType: 'text',
+                                success: function (response) {
+                                    location.reload();
+                                },
+                                error: function (response) {
+                                    $('.error-block').html(response);
+                                }
+                            })
+                        },
+                        error: function (response) {
+                            $('.error-block').html(response);
+                        }
                 })
-                location.reload()
             }
-            return final
         })
     </script>
 
     <script>
         function check_ability(item){
             let bool
-            if($("#ordman", item).val() === 'False'){
-                bool = false
-            } else {
-                bool = true
-            }
+            bool = $("#ordman", item).val() !== 'False';
             return bool
         }
     </script>
@@ -314,12 +318,11 @@
                     if(mode){
                         item.sortable({ disabled: false })
                     } else {
-                        item.sortable({ disabled: true })
+                        item.sortable({disabled: true})
                     }
+                    console.log('sto creando')
                 },
-                disabled: false,
                 update: function (){
-                    location.reload()
                     serial = item.sortable('serialize')
                     let data_send = {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -340,24 +343,6 @@
                     })
                 },
             })
-            $("#saveorder").click(function (){
-                let data_send = {
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    ordine: serial,
-                }
-                $.ajax({
-                    url: '{% url 'CurriculatorApp:sortelement' %}',
-                    type: 'POST',
-                    data: data_send,
-                    dataType: 'text',
-                    success: function (response) {
-                        window.location.reload();
-                        },
-                    error: function (response) {
-                        $('.error-block').html(response);
-                    }
-            })
-        })
     }
     </script>
 

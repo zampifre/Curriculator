@@ -263,9 +263,6 @@ def sort_manual(request):
         is_ajax = False
 
     if is_ajax:
-        sezione = Sezione.objects.get(id=request.POST['id'])
-        sezione.ordinamento_manuale = False
-        sezione.save()
         elementi = Elemento.objects.filter(sezione__in=request.POST['id'])
         elementi_no_data_fine = elementi.filter(data_fine=None)
         elementi_no_data_fine = elementi_no_data_fine.order_by('-data_inizio')
@@ -289,7 +286,11 @@ def set_manual(request):
 
     if is_ajax:
         sezione = Sezione.objects.get(id=request.POST['id'])
-        sezione.ordinamento_manuale = True
+        if not sezione.ordinamento_manuale:
+            sezione.ordinamento_manuale = True
+        else:
+            sezione.ordinamento_manuale = False
+
         sezione.save()
     return HttpResponse('ok')
 
