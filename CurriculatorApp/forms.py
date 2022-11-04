@@ -5,7 +5,6 @@ from .models import *
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
@@ -15,7 +14,6 @@ class UserForm(forms.ModelForm):
             'last_name',
             'email'
         ]
-
 
 class ProfiloForm(forms.ModelForm):
     class Meta:
@@ -27,7 +25,6 @@ class ProfiloForm(forms.ModelForm):
             'foto',
             'telefono',
         ]
-
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(max_length=254)
@@ -42,13 +39,11 @@ class UserRegisterForm(UserCreationForm):
         self.helper.form_method = 'POST'
         self.helper.add_input(Submit('submit', 'Registrati'))
 
-
 class SectionForm(forms.ModelForm):
     class Meta:
         model = Sezione
         fields = {'titolo'}
         exclude = {'curriculum', 'ordinamento_manuale'}
-
 
 class ElementForm(forms.ModelForm):
     class Meta:
@@ -62,11 +57,11 @@ class ElementForm(forms.ModelForm):
         exclude = {'sezione', 'posizione'}
         labels = {
             'data_fine': 'Data Fine <a tabindex="0" class="popover-dismiss" role="button" data-toggle="popover" \
-               data-trigger="focus" title="Omettendo la data di fine l\'evento è in corso! Inserendo la data di fine l\'evento è concluso!" \
+               data-trigger="focus" title="Inserendo solo la data di fine l\'evento è concluso!" \
                data-content=""> \
                <i class="fa fa-info-circle fa-1x" aria-hidden="true"></i></a>',
             'data_inizio':  'Data Inizio <a tabindex="0" class="popover-dismiss" role="button" data-toggle="popover" \
-               data-trigger="focus" title="Non è necessario specificare la data di inizio inserendo quella di fine!" \
+               data-trigger="focus" title="Non inserendo la data di inizio l\'evento è attualmente in corso!" \
                data-content=""> \
                <i class="fa fa-info-circle fa-1x" aria-hidden="true"></i></a>'
         }

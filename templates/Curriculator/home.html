@@ -4,17 +4,28 @@
 {% block content %}
     {% block navabar %} {% endblock %}
     <div class="container">
-    <div class="jumbotron">
-        <h1>Homepage</h1>
-        {% if user.is_authenticated %}
-            <p>Benvenuto {{ user.username }}!</p>
-            <p><a class="btn btn-outline-secondary" href="{% url 'CurriculatorApp:profilo' pk=user.pk %}"> Profilo </a></p>
-            <p><a class="btn btn-outline-secondary" href="{% url 'CurriculatorApp:aggiorna-profilo' %}">Aggiorna Profilo </a></p>
-            <p><a class="btn btn-outline-secondary" href="{% url 'logout' %}">Logout</a><br></p>
-        {% else %}
-            <p><a class="btn btn-outline-secondary" href="{% url 'CurriculatorApp:user-register' %}">Register</a><br></p>
-            <p><a class="btn btn-outline-secondary" href="{% url 'login' %}">Login</a><br></p>
-            </div>
-            </div>
-    {% endif %}
+        <div class="jumbotron">
+            <h1>Curriculator</h1>
+            {% if user.is_authenticated %}
+                {% if utente.data_nascita == None or utente.luogo_nascita == '' or utente.telefono == '' or user.email == ''%}
+                    <div class="alert alert-danger" role="alert">
+                        Completa il tuo <a href="{% url 'CurriculatorApp:aggiorna-profilo' %}" style="text-decoration: none;">
+                        <strong>profilo</strong></a> prima di continuare.
+                    </div>
+                {% endif %}
+                <p>
+                    Benvenuto {{ user.username }}!
+                </p>
+                <p><a class="btn btn-primary btn-sm" href="{% url 'CurriculatorApp:profilo' pk=user.pk %}"> Profilo </a></p>
+                <p><a class="btn btn-primary btn-sm" href="{% url 'CurriculatorApp:aggiorna-profilo' %}">Aggiorna Profilo </a></p>
+                <p><a class="btn btn-primary btn-sm" href="{% url 'logout' %}">Logout</a><br></p>
+            {% else %}
+                <p>
+                    Questo sito consente di creare, modificare ed esportare versioni differenti di curriculum in modo totalmente diamico.
+                </p>
+                <p><a class="btn btn-primary btn-sm" href="{% url 'CurriculatorApp:user-register' %}">Register</a><br></p>
+                <p><a class="btn btn-primary btn-sm" href="{% url 'login' %}">Login</a><br></p>
+                </div>
+                </div>
+            {% endif %}
 {% endblock %}

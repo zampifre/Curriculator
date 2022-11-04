@@ -27,6 +27,7 @@
     <orderEntry type="library" name="sortablejs" level="application" />
     <orderEntry type="library" name="Sortable" level="application" />
     <orderEntry type="library" name="jquery-1.12.4" level="application" />
+    <orderEntry type="library" name="@popperjs" level="application" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />

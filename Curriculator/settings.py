@@ -41,9 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django_extensions',
+    'django_yaml_field',
     'django.contrib.staticfiles',
     'CurriculatorApp.apps.CurriculatorappConfig',
 ]
+
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

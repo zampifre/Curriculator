@@ -15,21 +15,26 @@
     <div class="container">
         <h1>{{ object.profilo.user.first_name }} {{ object.profilo.user.last_name }}</h1>
         <hr>
-        <div id="imageprofile" class="card" style="width: 12rem;">
-            <img src="{{ object.profilo.foto.url }}" class="card-img-top" alt="...">
-        </div>
-        <br>
-        <div id="dati">
-            <h6><strong>Data di nascita: </strong> {{ object.profilo.data_nascita }}</h6>
-            <h6><strong>Luogo di nascita: </strong> {{ object.profilo.luogo_nascita }}</h6>
-            <h6><strong>Email: </strong> {{ object.profilo.user.email }}</h6>
-            <h6><strong>Telefono: </strong> {{ object.profilo.telefono }} </h6>
+        <div class="card mb-3" style="max-width: 580px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{ object.profilo.foto.url }}" class="img-fluid rounded-start" alt="">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>Data di nascita:</strong> {{ object.profilo.data_nascita }}<br>
+                            <strong>Luogo di nascita:</strong> {{ object.profilo.luogo_nascita }} <br>
+                            <strong>Email:</strong> {{ object.profilo.user.email }} <br>
+                            <strong>Telefono:</strong> {{ object.profilo.telefono }}
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
         <a class="btn btn-success float-end btn-sm" href="{% url 'CurriculatorApp:templatepdf' pk=object.pk %}"> Visualizza Anteprima</a>
         <br>
     </div>
-
-
 
     <div id="form-sec-ajax" class="container-sm" style="display: none">
         <form id="form-sezione">
@@ -148,25 +153,6 @@
                                     {% if element.data_inizio and not element.data_fine %}
                                         <li>
                                             <b>{{ element.data_inizio }} - att.</b> {{ element.titolo }}
-                                        </li>
-                                        <a class="btn btn-outline-danger"
-                                           style="float: right;" href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                                 class="bi bi-trash" viewBox="0 0 16 16">
-                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                            </svg>
-                                        </a>
-                                        <button id="sezione-update" style="float: right;" onclick="views_form_edit_element({{ item.id }}, ['{{ element.titolo }}', '{{ element.data_inizio}}', '{{ element.data_fine }}', '{{ element.campi|dict_to_json }}', '{{ element.id }}'])" class="btn btn-outline-primary">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                            </svg>
-                                        </button>
-                                    {% endif %}
-
-                                    {% if not element.data_inizio and not element.data_fine %}
-                                        <li>
-                                            {{ element.titolo }}
                                         </li>
                                         <a class="btn btn-outline-danger"
                                            style="float: right;" href="{% url 'CurriculatorApp:delete-elemento' element.id %}" onclick="if(confirm('Confermi di voler cancellare?')){}else{return false;}">
@@ -357,19 +343,26 @@
                 data_fine: $("#id_data_fine", "#form-elemento" + id).val(),
                 sezione: id
             }
-            $.ajax({
-                url: '{% url 'CurriculatorApp:newelement' %}',
-                type: 'POST',
-                data: form_data,
-                dataType: 'text',
-                success: function (response) {
-                    document.getElementById("form-elemento" + id).reset();
-                    window.location.reload();
-                },
-                error: function (response) {
-                    $('.error-block').html(response);
-                }
-            })
+            if(!form_data.data_inizio && !form_data.data_fine){
+                alert('Obbligatorio inserire una delle due date!')
+            }
+            else if(form_data.data_fine && form_data.data_fine <= form_data.data_inizio) {
+                 alert('La data di fine non può essere inferiore o uguale a quella di inizio!')
+            } else {
+                $.ajax({
+                    url: '{% url 'CurriculatorApp:newelement' %}',
+                    type: 'POST',
+                    data: form_data,
+                    dataType: 'text',
+                    success: function (response) {
+                        document.getElementById("form-elemento" + id).reset();
+                        window.location.reload();
+                    },
+                    error: function (response) {
+                        $('.error-block').html(response);
+                    }
+                })
+            }
         }
     </script>
 
@@ -385,19 +378,26 @@
                 sezione: id,
                 id_elemento: $("#pk_elemento").val()
             }
-            $.ajax({
-                url: '{% url 'CurriculatorApp:editelement' %}',
-                type: 'POST',
-                data: form_data,
-                dataType: 'text',
-                success: function (response) {
-                    document.getElementById("edit-element" + id).reset();
-                    window.location.reload();
-                },
-                error: function (response) {
-                    $('.error-block').html(response);
-                }
-            })
+            if(!form_data.data_inizio && !form_data.data_fine){
+                alert('Necessaria una delle due date!')
+            }
+            else if(form_data.data_fine && form_data.data_fine <= form_data.data_inizio) {
+                alert('La data di fine non può essere inferiore o uguale a quella di inizio!')
+            } else{
+                $.ajax({
+                    url: '{% url 'CurriculatorApp:editelement' %}',
+                    type: 'POST',
+                    data: form_data,
+                    dataType: 'text',
+                    success: function (response) {
+                        document.getElementById("edit-element" + id).reset();
+                        window.location.reload();
+                    },
+                    error: function (response) {
+                        $('.error-block').html(response);
+                    }
+                })
+            }
         }
     </script>
 
@@ -426,9 +426,9 @@
     </script>
 
     <script>
-        $(document).ready(function(){
-            $('[data-toggle="popover"]').popover();
-        });
+        $('.popover-dismiss').click(function () {
+            $('[data-toggle="popover"]').popover()
+        })
     </script>
 
     <script>

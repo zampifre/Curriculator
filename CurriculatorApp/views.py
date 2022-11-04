@@ -13,7 +13,6 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth import authenticate, login
 from .models import *
 
-
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -150,7 +149,6 @@ def delete_sezione(request, pk):
     messages.error(request, 'Sezione eliminata con successo!')
     #refresh della pagina corrente
     return redirect(request.META['HTTP_REFERER'])
-    #return redirect('CurriculatorApp:dettagli-curriculum', kwargs={'pk': sezione.curriculum.pk})
 
 def elemento_create(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -169,8 +167,6 @@ def elemento_create(request):
         elemento_sezione = Sezione.objects.get(id=request.POST['sezione'])
         elemento_campi = request.POST['campi']
         if elemento_titolo and elemento_campi and elemento_sezione:
-            print(elemento_data_inizio)
-            print(elemento_data_fine)
             elemento = Elemento.objects.create(titolo=elemento_titolo, data_inizio=elemento_data_inizio,
                                                data_fine=elemento_data_fine, sezione=elemento_sezione,
                                                campi=elemento_campi)
@@ -227,11 +223,9 @@ def sezione_update(request):
         is_ajax = False
 
     if is_ajax:
-        print('entrato')
         sezione = Sezione.objects.get(id=request.POST['id_sezione'])
         sezione.titolo = request.POST['titolo']
         cv = Curriculum.objects.get(pk=sezione.curriculum.id)
-        print(sezione)
         if sezione.titolo:
             sezione.save()
             cv.data_modifica = datetime.date.today()
@@ -254,7 +248,7 @@ def sort(request):
             elemento = Elemento.objects.get(pk=id_elemento)
             elemento.posizione = index
             elemento.save()
-        return HttpResponse('ok')
+        return HttpResponse('successo')
 
 def sort_manual(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -263,7 +257,7 @@ def sort_manual(request):
         is_ajax = False
 
     if is_ajax:
-        elementi = Elemento.objects.filter(sezione__in=request.POST['id'])
+        elementi = Elemento.objects.filter(sezione=Sezione.objects.get(id=request.POST['id']))
         elementi_no_data_fine = elementi.filter(data_fine=None)
         elementi_no_data_fine = elementi_no_data_fine.order_by('-data_inizio')
         list_no_data_fine = elementi_no_data_fine.values_list('pk', flat=True)
@@ -275,7 +269,7 @@ def sort_manual(request):
             elemento = Elemento.objects.get(pk=id_elemento)
             elemento.posizione = index
             elemento.save()
-    return HttpResponse('ok')
+    return HttpResponse('successo')
 
 
 def set_manual(request):
@@ -315,5 +309,5 @@ def pdf_report_create(request, cv_id):
     pisa_status = pisa.CreatePDF(html, dest=response)
 
     if pisa_status.err:
-        return HttpResponse('We had error <pre>' + html + '</pre>')
+        return HttpResponse('Errore <pre>' + html + '</pre>')
     return response
