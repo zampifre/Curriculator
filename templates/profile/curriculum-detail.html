@@ -295,7 +295,6 @@
             call($('.list-group', this))
         })
         function call(item){
-            console.log(item.parent())
             let serial;
             item.sortable({
                 axis: "y",
@@ -306,7 +305,6 @@
                     } else {
                         item.sortable({disabled: true})
                     }
-                    console.log('sto creando')
                 },
                 update: function (){
                     serial = item.sortable('serialize')
@@ -354,13 +352,10 @@
                     type: 'POST',
                     data: form_data,
                     dataType: 'text',
-                    success: function (response) {
+                    success: function (data) {
                         document.getElementById("form-elemento" + id).reset();
-                        window.location.reload();
+                        window.location.reload()
                     },
-                    error: function (response) {
-                        $('.error-block').html(response);
-                    }
                 })
             }
         }
@@ -394,7 +389,7 @@
                         window.location.reload();
                     },
                     error: function (response) {
-                        $('.error-block').html(response);
+                       alert(data.msg);
                     }
                 })
             }

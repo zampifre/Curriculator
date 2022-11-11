@@ -1,12 +1,14 @@
 import re
 from itertools import chain
+import yaml
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 from xhtml2pdf import pisa
+from yaml.scanner import ScannerError
 from .forms import *
 from django.contrib import messages
 from django.views.generic.edit import CreateView
@@ -14,6 +16,13 @@ from django.contrib.auth import authenticate, login
 from .models import *
 
 def register(request):
+    """
+    View per la registrazione di un nuovo Utente. Fornisce la visualizzazione del Template.
+
+    **Template:**
+
+    :template:`registration/registration.html`
+    """
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -32,16 +41,39 @@ def register(request):
 
 
 class Profilo(DetailView):
+    """
+    View per la visualizzazione del profilo e relativi dati.
+
+    **Model:**
+
+    :model:`CurriculatorApp.Profile`
+
+    **Template:**
+
+    :template:`profile/profilo_view.html`
+    """
     template_name = 'profile/profilo_view.html'
     model = Profile
 
     def get_context_data(self, **kwargs):
+        """
+        Inserisce nel context tutti i Curriculum associati a quel Profilo specifico.
+        """
         context = super(Profilo, self).get_context_data(**kwargs)
         context['curriculum'] = Curriculum.objects.filter(profilo=kwargs['object'].id)
         return context
 
 
 class ProfileUpdateView(LoginRequiredMixin, TemplateView):
+    """
+    View per la modifica del profilo tramite un apposito form.
+    Permette di modificare o aggiungere i dati mancanti per il completamento.
+
+    **Template**
+
+    :template:`profile/aggiorna-profilo.html`
+
+    """
     profile_form = ProfiloForm
     template_name = 'profile/aggiorna-profilo.html'
 
@@ -65,6 +97,9 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
 
 
 def new_cv(request):
+    """
+    Metodo per la creazione di un'istanza di Curriculum all'interno del Profilo.
+    """
     profilo = Profile.objects.get(user=request.user)
     data_creazione = datetime.date.today()
     data_modifica = datetime.date.today()
@@ -113,7 +148,6 @@ class CurriculumDetail(DetailView):
         context['form_sezione'] = SectionForm()
         context['curriculum'] = kwargs['object']
         context['sezioni'] = Sezione.objects.filter(curriculum=kwargs['object'].id)
-        print(kwargs['object'].profilo)
         context['elementi'] = Elemento.objects.filter(sezione__in=context['sezioni'])
         return context
 
@@ -166,15 +200,21 @@ def elemento_create(request):
             elemento_data_fine = None
         elemento_sezione = Sezione.objects.get(id=request.POST['sezione'])
         elemento_campi = request.POST['campi']
-        if elemento_titolo and elemento_campi and elemento_sezione:
-            elemento = Elemento.objects.create(titolo=elemento_titolo, data_inizio=elemento_data_inizio,
+        try:
+            campi = yaml.load(elemento_campi, yaml.SafeLoader)
+        except ScannerError as exc:
+            return JsonResponse({'error': True, 'message': 'Sintassi Invalida'})
+        else:
+            if elemento_titolo and elemento_campi and elemento_sezione:
+                elemento = Elemento.objects.create(titolo=elemento_titolo, data_inizio=elemento_data_inizio,
                                                data_fine=elemento_data_fine, sezione=elemento_sezione,
-                                               campi=elemento_campi)
-            cv = elemento_sezione.curriculum
-            cv.data_modifica = datetime.date.today()
-            cv.save()
-            elemento.save()
-            return redirect(request.META['HTTP_REFERER'])
+                                               campi=yaml.safe_load(elemento_campi))
+                cv = elemento_sezione.curriculum
+                cv.data_modifica = datetime.date.today()
+                cv.save()
+                elemento.save()
+                return redirect(request.META['HTTP_REFERER'])
+
 
 def element_update(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -192,13 +232,18 @@ def element_update(request):
         if elemento.data_fine == '':
             elemento.data_fine = None
         elemento.campi = request.POST['campi']
-        elemento.sezione = Sezione.objects.get(id=request.POST['sezione'])
-        if elemento.titolo and elemento.campi and elemento.sezione:
-            cv = elemento.sezione.curriculum
-            cv.data_modifica = datetime.date.today()
-            cv.save()
-            elemento.save()
-            return redirect(request.META['HTTP_REFERER'])
+        try:
+            campi = yaml.load(elemento.campi, yaml.SafeLoader)
+        except ScannerError as exc:
+            return JsonResponse({'error': True, 'message': 'Sintassi Invalida'})
+        else:
+            elemento.sezione = Sezione.objects.get(id=request.POST['sezione'])
+            if elemento.titolo and elemento.campi and elemento.sezione:
+                cv = elemento.sezione.curriculum
+                cv.data_modifica = datetime.date.today()
+                cv.save()
+                elemento.save()
+                return redirect(request.META['HTTP_REFERER'])
 
 def sezione_create(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

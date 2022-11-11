@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django_extensions',
     'django_yaml_field',
+    'django.contrib.admindocs',
     'django.contrib.staticfiles',
     'CurriculatorApp.apps.CurriculatorappConfig',
 ]
