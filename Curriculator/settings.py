@@ -13,6 +13,7 @@ import os.path
 from pathlib import Path
 
 from django.contrib import staticfiles
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -82,6 +83,14 @@ TEMPLATES = [
         },
     },
 ]
+
+MESSAGE_TAGS = {
+        messages.DEBUG: 'alert alert-secondary',
+        messages.INFO: 'alert alert-info',
+        messages.SUCCESS: 'alert alert-success',
+        messages.WARNING: 'alert alert-warning',
+        messages.ERROR: 'alert alert-danger',
+ }
 
 WSGI_APPLICATION = 'Curriculator.wsgi.application'
 

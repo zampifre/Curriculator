@@ -203,6 +203,7 @@ def elemento_create(request):
         try:
             campi = yaml.load(elemento_campi, yaml.SafeLoader)
         except ScannerError as exc:
+            messages.error(request, 'Sintassi invalida nei campi dell\'elemento.')
             return JsonResponse({'error': True, 'message': 'Sintassi Invalida'})
         else:
             if elemento_titolo and elemento_campi and elemento_sezione:
@@ -235,6 +236,7 @@ def element_update(request):
         try:
             campi = yaml.load(elemento.campi, yaml.SafeLoader)
         except ScannerError as exc:
+            messages.error(request, 'Sintassi invalida nei campi dell\'elemento.')
             return JsonResponse({'error': True, 'message': 'Sintassi Invalida'})
         else:
             elemento.sezione = Sezione.objects.get(id=request.POST['sezione'])
