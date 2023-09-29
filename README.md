@@ -1,6 +1,8 @@
 # Curriculator
 
 Curriculator is a web application developed in Python as a project for a bachelor's degree internship. It allows for the dynamic and rapid creation of curriculum vitae (CVs). The application is built using the Django framework for the backend and primarily utilizes Bootstrap elements for the front-end.
+Some front-end features have been implemented using JavaScript and AJAX.
+
 
 ## Features
 
