@@ -13,4 +13,8 @@ Some front-end features have been implemented using JavaScript and AJAX.
 
 
 
+## Overview
+
+https://github.com/zampifre/Curriculator/assets/60720249/c8bde502-7607-4846-a4a3-796ab5af8262
+
 
