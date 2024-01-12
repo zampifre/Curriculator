@@ -11,3 +11,7 @@ Some front-end features have been implemented using JavaScript and AJAX.
 - Django-powered backend: Robust and secure backend built on the Django framework.
 - Bootstrap for front-end: Responsive and attractive CV templates using Bootstrap.
 
+
+
+https://github.com/zampifre/Curriculator/assets/60720249/d72ae325-1d8f-4c4b-aed7-c0a3cdefa288
+
