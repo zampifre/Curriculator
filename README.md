@@ -10,7 +10,7 @@ Some front-end features have been implemented using JavaScript and AJAX.
 - User-friendly interface: A simple and intuitive web-based interface for creating and managing CVs.
 - Django-powered backend: Robust and secure backend built on the Django framework.
 - Bootstrap for front-end: Responsive and attractive CV templates using Bootstrap.
-
+- Export PDF
 
 
 ## Overview
